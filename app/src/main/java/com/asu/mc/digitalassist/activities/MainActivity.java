@@ -1,4 +1,4 @@
-package com.asu.mc.digitalassist;
+package com.asu.mc.digitalassist.activities;
 
 import android.content.Context;
 import android.location.Location;
@@ -6,6 +6,8 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+
+import com.asu.mc.digitalassist.R;
 
 public class MainActivity extends AppCompatActivity implements LocationListener {
 
