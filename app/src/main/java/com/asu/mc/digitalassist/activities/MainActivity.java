@@ -2,7 +2,6 @@ package com.asu.mc.digitalassist.activities;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
-import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -24,7 +23,6 @@ public class MainActivity extends AppCompatActivity implements OnConnectionFaile
     protected static final String TAG = MainActivity.class.getSimpleName();
 
     protected GoogleApiClient mGoogleApiClient;
-    protected Location mLastLocation;
 
     protected TextView txtLat;
     protected TextView txtLong;
