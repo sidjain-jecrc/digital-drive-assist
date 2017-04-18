@@ -2,6 +2,7 @@ package com.asu.mc.digitalassist.activities;
 
 import android.Manifest;
 import android.app.ListActivity;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -105,7 +106,11 @@ public class RestaurantActivity extends ListActivity implements OnConnectionFail
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
-        Toast.makeText(this, "Selected Item: " + position, Toast.LENGTH_SHORT).show();
+        Intent moveToWebView = new Intent(this, RestaurantWebViewActivity.class);
+        Restaurant res = (Restaurant) getListAdapter().getItem(position);
+        String url = res.getMobileUrl();
+        moveToWebView.putExtra("EXTRA_URL", url);
+        startActivity(moveToWebView);
     }
 
     @Override
