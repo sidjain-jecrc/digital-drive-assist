@@ -17,12 +17,18 @@ import java.util.List;
 
 public class RestaurantApiClient {
 
+    /*
+     * Setting OAuth credentials below from the Yelp Developers API site:
+     * http://www.yelp.com/developers/getting_started/api_access
+    */
+    protected static final String TAG = RestaurantApiClient.class.getSimpleName();
+
     private static final String CONSUMER_KEY = "0g_t1_QDCB1I2vm_eNtClg";
     private static final String CONSUMER_SECRET = "JUgGx3X6vNme9jcgxAcSryUdPEQ";
     private static final String TOKEN = "xVgENShX8UlT_Xci_fW8VB_kHchlfV1w";
     private static final String TOKEN_SECRET = "I6z_giUHlzqNqmCEkEVL1QMytXU";
 
-    protected List<Restaurant> getNearbyRestaurantList(String zipCodeorCityName) {
+    public List<Restaurant> getNearbyRestaurantList(String zipCodeorCityName) {
 
         RestaurantSearchApiUtility utilObject = new RestaurantSearchApiUtility(CONSUMER_KEY, CONSUMER_SECRET, TOKEN, TOKEN_SECRET);
         String responseString = utilObject.searchForNearbyRestaurantByLocation(zipCodeorCityName);
@@ -47,7 +53,10 @@ public class RestaurantApiClient {
                         String mobileUrl = (String) (innerBusinessObject.get("mobile_url") != null ? innerBusinessObject.get("mobile_url") : innerBusinessObject.get("url"));
                         String ratings = String.valueOf(innerBusinessObject.get("rating"));
                         String contact = String.valueOf(innerBusinessObject.get("phone"));
-                        String category = (String) ((JSONArray) innerBusinessObject.get("categories")).get(0);
+
+                        JSONArray categoryObject = (JSONArray) innerBusinessObject.get("categories");
+                        JSONArray categoryArray = (JSONArray) categoryObject.get(0);
+                        String category = (String) categoryArray.get(0);
                         responseList.add(new Restaurant(name, mobileUrl, ratings, contact, category));
                     }
                 }
