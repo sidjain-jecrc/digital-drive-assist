@@ -2,6 +2,7 @@ package com.asu.mc.digitalassist.activities;
 
 import android.Manifest;
 import android.app.ListActivity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
@@ -19,6 +20,7 @@ import com.asu.mc.digitalassist.R;
 import com.asu.mc.digitalassist.activities.models.Restaurant;
 import com.asu.mc.digitalassist.activities.rsclient.RestaurantApiClient;
 import com.asu.mc.digitalassist.activities.utility.RestaurantListAdapter;
+import com.firebase.ui.auth.IdpResponse;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
@@ -37,7 +39,12 @@ public class RestaurantActivity extends ListActivity implements OnConnectionFail
 
 
     protected final int MY_PERMISSIONS_REQUEST_READ_LOCATION = 1;
-
+    private static IdpResponse idpResponse = null;
+    public static Intent createIntent(Context context,IdpResponse response){
+        Intent intent = new Intent(context,RestaurantActivity.class);
+        idpResponse = response;
+        return intent;
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
