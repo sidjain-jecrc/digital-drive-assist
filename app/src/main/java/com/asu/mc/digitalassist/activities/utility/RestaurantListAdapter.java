@@ -33,23 +33,20 @@ public class RestaurantListAdapter extends ArrayAdapter<Restaurant> {
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
 
-        View rowView = convertView;
-        if (rowView == null) {
-            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            rowView = inflater.inflate(R.layout.restaurant, parent, false);
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View rowView = inflater.inflate(R.layout.restaurant, parent, false);
 
-            TextView nameTextView = (TextView) rowView.findViewById(R.id.restaurant_textName);
-            TextView ratingTextView = (TextView) rowView.findViewById(R.id.restaurant_textRating);
-            TextView categoryTextView = (TextView) rowView.findViewById(R.id.restaurant_textCategory);
-            TextView phoneTextView = (TextView) rowView.findViewById(R.id.restaurant_textPhone);
+        TextView nameTextView = (TextView) rowView.findViewById(R.id.restaurant_textName);
+        TextView ratingTextView = (TextView) rowView.findViewById(R.id.restaurant_textRating);
+        TextView categoryTextView = (TextView) rowView.findViewById(R.id.restaurant_textCategory);
+        TextView phoneTextView = (TextView) rowView.findViewById(R.id.restaurant_textPhone);
 
-            Restaurant res = getItem(position);
-            if (res != null) {
-                nameTextView.setText(res.getName());
-                ratingTextView.setText(res.getRating());
-                categoryTextView.setText(res.getCategory());
-                phoneTextView.setText(res.getPhone());
-            }
+        Restaurant res = getItem(position);
+        if (res != null) {
+            nameTextView.setText(res.getName());
+            ratingTextView.setText(res.getRating());
+            categoryTextView.setText(res.getCategory());
+            phoneTextView.setText(res.getPhone());
         }
         return rowView;
     }

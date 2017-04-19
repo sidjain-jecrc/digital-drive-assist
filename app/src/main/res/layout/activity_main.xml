@@ -11,23 +11,10 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.asu.mc.digitalassist.activities.RestaurantActivity">
 
-    <TextView
-        android:id="@+id/txtGpsLatitude"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Latitude" />
-
-    <TextView
-        android:id="@+id/txtGpsLongitude"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Longitude" />
-
-    <TextView
-        android:id="@+id/txtRestaurantName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Restaurant Name" />
+    <ListView
+        android:id="@+id/restaurant_listView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"></ListView>
 
 
 </LinearLayout>

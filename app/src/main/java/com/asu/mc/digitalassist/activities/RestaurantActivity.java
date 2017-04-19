@@ -9,17 +9,15 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.asu.mc.digitalassist.R;
 import com.asu.mc.digitalassist.activities.models.Restaurant;
 import com.asu.mc.digitalassist.activities.rsclient.RestaurantApiClient;
-import com.asu.mc.digitalassist.activities.utility.LocationUtility;
 import com.asu.mc.digitalassist.activities.utility.RestaurantListAdapter;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -35,10 +33,8 @@ public class RestaurantActivity extends ListActivity implements OnConnectionFail
 
     protected GoogleApiClient mGoogleApiClient;
     protected RestaurantApiClient mRestaurantApiClient;
+    protected ListView restaurantListView;
 
-    protected TextView txtLat;
-    protected TextView txtLong;
-    protected TextView txtRestName;
 
     protected final int MY_PERMISSIONS_REQUEST_READ_LOCATION = 1;
 
@@ -46,13 +42,11 @@ public class RestaurantActivity extends ListActivity implements OnConnectionFail
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 //        setContentView(R.layout.activity_main);
-
-//        txtLat = (TextView) findViewById(R.id.txtGpsLatitude);
-//        txtLong = (TextView) findViewById(R.id.txtGpsLongitude);
-//        txtRestName = (TextView) findViewById(R.id.txtRestaurantName);
-
+//        restaurantListView = (ListView) findViewById(R.id.restaurant_listView);
 //        checkAppPermissions();
 //        buildGoogleApiClient();
+
+        // TODO: insert convert latitude-longitude to zipcode logic
 
         new FetchRestaurantTask().execute("85281");
 
@@ -70,7 +64,8 @@ public class RestaurantActivity extends ListActivity implements OnConnectionFail
 
         protected void onPostExecute(List<Restaurant> restaurantList) {
             if (restaurantList.size() > 0) {
-                setListAdapter(new RestaurantListAdapter(RestaurantActivity.this, restaurantList));
+                ArrayAdapter<Restaurant> restaurantArrayAdapter = new RestaurantListAdapter(RestaurantActivity.this, restaurantList);
+                setListAdapter(restaurantArrayAdapter);
             }
         }
     }
@@ -143,8 +138,6 @@ public class RestaurantActivity extends ListActivity implements OnConnectionFail
 //        checkAppPermissions();
 //        String latLong = LocationUtility.getCurrentKnownLocation(mGoogleApiClient);
 //        String[] coordinates = latLong.split(",");
-//        txtLat.setText(coordinates[0]);
-//        txtLong.setText(coordinates[1]);
     }
 
     @Override

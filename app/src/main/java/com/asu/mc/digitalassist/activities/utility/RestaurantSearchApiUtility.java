@@ -36,6 +36,7 @@ public class RestaurantSearchApiUtility {
         request.addQuerystringParameter("term", "food");  // Change here: Restaurant / Food (currently its Food)
         request.addQuerystringParameter("location", zipcodeOrCityName);
         request.addQuerystringParameter("sort", String.valueOf(SORT_BY_RATING));
+        request.addQuerystringParameter("sort", String.valueOf(SORT_BY_DISTANCE));
         request.addQuerystringParameter("radius_filter", String.valueOf(SEARCH_RADIUS));
         request.addQuerystringParameter("limit", String.valueOf(SEARCH_LIMIT));
         return sendRequestAndGetResponse(request);
