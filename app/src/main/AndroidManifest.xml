@@ -37,7 +37,7 @@
         </activity>
 
         <service
-            android:name=".activities.services.SampleService"
+            android:name=".activities.services.GeoCodingService"
             android:enabled="true"
             android:exported="true" />
 

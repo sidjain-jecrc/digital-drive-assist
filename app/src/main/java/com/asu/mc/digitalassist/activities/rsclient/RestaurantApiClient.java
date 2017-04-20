@@ -1,5 +1,7 @@
 package com.asu.mc.digitalassist.activities.rsclient;
 
+import android.util.Log;
+
 import com.asu.mc.digitalassist.activities.models.Restaurant;
 import com.asu.mc.digitalassist.activities.utility.RestaurantSearchApiUtility;
 
@@ -36,34 +38,36 @@ public class RestaurantApiClient {
         JSONParser parser = new JSONParser();
         try {
 
-            // parsing response string using simple json parser
-            JSONObject jsonObject = (JSONObject) parser.parse(responseString);
-            long numOfRestaurantsNearby = (long) jsonObject.get("total");
+            if (responseString != null || !responseString.equals("")) {
+                // parsing response string using simple json parser
+                JSONObject jsonObject = (JSONObject) parser.parse(responseString);
+                long numOfRestaurantsNearby = (long) jsonObject.get("total");
 
-            // Checking if there is at least one store in the vicinity
-            if (numOfRestaurantsNearby > 0) {
-                JSONArray arrayObject = (JSONArray) jsonObject.get("businesses");
+                // Checking if there is at least one store in the vicinity
+                if (numOfRestaurantsNearby > 0) {
+                    JSONArray arrayObject = (JSONArray) jsonObject.get("businesses");
 
-                for (Object obj : arrayObject) {
-                    JSONObject innerBusinessObject = (JSONObject) obj;
-                    boolean isClosed = (boolean) innerBusinessObject.get("is_closed");
-                    if (!isClosed) {
+                    for (Object obj : arrayObject) {
+                        JSONObject innerBusinessObject = (JSONObject) obj;
+                        boolean isClosed = (boolean) innerBusinessObject.get("is_closed");
+                        if (!isClosed) {
 
-                        String name = (String) innerBusinessObject.get("name");
-                        String mobileUrl = (String) (innerBusinessObject.get("mobile_url") != null ? innerBusinessObject.get("mobile_url") : innerBusinessObject.get("url"));
-                        String ratings = String.valueOf(innerBusinessObject.get("rating"));
-                        String contact = String.valueOf(innerBusinessObject.get("phone"));
+                            String name = (String) innerBusinessObject.get("name");
+                            String mobileUrl = (String) (innerBusinessObject.get("mobile_url") != null ? innerBusinessObject.get("mobile_url") : innerBusinessObject.get("url"));
+                            String ratings = String.valueOf(innerBusinessObject.get("rating"));
+                            String contact = String.valueOf(innerBusinessObject.get("phone"));
 
-                        JSONArray categoryObject = (JSONArray) innerBusinessObject.get("categories");
-                        JSONArray categoryArray = (JSONArray) categoryObject.get(0);
-                        String category = (String) categoryArray.get(0);
-                        responseList.add(new Restaurant(name, mobileUrl, ratings, contact, category));
+                            JSONArray categoryObject = (JSONArray) innerBusinessObject.get("categories");
+                            JSONArray categoryArray = (JSONArray) categoryObject.get(0);
+                            String category = (String) categoryArray.get(0);
+                            responseList.add(new Restaurant(name, mobileUrl, ratings, contact, category));
+                        }
                     }
                 }
             }
 
         } catch (ParseException e) {
-            e.printStackTrace();
+            Log.e(TAG, e.getMessage());
         }
         return responseList;
     }

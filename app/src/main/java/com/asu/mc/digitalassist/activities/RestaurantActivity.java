@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.asu.mc.digitalassist.R;
 import com.asu.mc.digitalassist.activities.models.Restaurant;
@@ -63,9 +64,11 @@ public class RestaurantActivity extends ListActivity implements OnConnectionFail
         }
 
         protected void onPostExecute(List<Restaurant> restaurantList) {
-            if (restaurantList.size() > 0) {
+            if (restaurantList != null && restaurantList.size() > 0) {
                 ArrayAdapter<Restaurant> restaurantArrayAdapter = new RestaurantListAdapter(RestaurantActivity.this, restaurantList);
                 setListAdapter(restaurantArrayAdapter);
+            } else {
+                Toast.makeText(getApplicationContext(), "No restaurants for the current location", Toast.LENGTH_SHORT).show();
             }
         }
     }
