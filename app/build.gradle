@@ -5,7 +5,7 @@ android {
     buildToolsVersion "25.0.2"
     defaultConfig {
         applicationId "com.asu.mc.digitalassist"
-        minSdkVersion 14
+        minSdkVersion 16
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
@@ -31,5 +31,16 @@ dependencies {
     compile 'com.android.support:support-v4:25.2.0'
     compile 'com.google.android.gms:play-services:10.2.1'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    compile 'com.google.firebase:firebase-auth:10.2.1'
+    compile 'com.firebaseui:firebase-ui-auth:1.2.0'
     testCompile 'junit:junit:4.12'
 }
+allprojects {
+    repositories {
+        // ...
+        maven { url 'https://maven.fabric.io/public' }
+    }
+}
+
+
+apply plugin: 'com.google.gms.google-services'
