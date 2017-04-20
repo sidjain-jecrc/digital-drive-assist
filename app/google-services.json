@@ -1,0 +1,58 @@
+{
+  "project_info": {
+    "project_number": "1054203021369",
+    "firebase_url": "https://digital-drive-assist.firebaseio.com",
+    "project_id": "digital-drive-assist",
+    "storage_bucket": "digital-drive-assist.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1054203021369:android:da3128e4da397671",
+        "android_client_info": {
+          "package_name": "com.asu.mc.digitalassist"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1054203021369-jht2n5cc8re9u9nb8lgpii40rmnfttfo.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.asu.mc.digitalassist",
+            "certificate_hash": "5c6e5dc7290ad1244c5f055e139b938afd66659a"
+          }
+        },
+        {
+          "client_id": "1054203021369-9e4ivqck69cc044505sjpvk1qqqgc4mg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD4OgHFeLKTeURHfMpkeGU8B0J9w4fduGs"
+        },
+        {
+          "current_key": "AIzaSyBApj4TVMRl2iQtJ5XZl7o_CE2PLGSD13g"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1054203021369-9e4ivqck69cc044505sjpvk1qqqgc4mg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

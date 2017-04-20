@@ -2,6 +2,7 @@ package com.asu.mc.digitalassist.activities;
 
 import android.Manifest;
 import android.app.ListActivity;
+import android.app.Notification;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -19,6 +20,7 @@ import android.widget.TextView;
 import com.asu.mc.digitalassist.R;
 import com.asu.mc.digitalassist.activities.models.Restaurant;
 import com.asu.mc.digitalassist.activities.rsclient.RestaurantApiClient;
+import com.asu.mc.digitalassist.activities.services.NotificationService;
 import com.asu.mc.digitalassist.activities.utility.RestaurantListAdapter;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.android.gms.common.ConnectionResult;
@@ -26,7 +28,6 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 import com.google.android.gms.location.LocationServices;
-
 import java.util.List;
 
 public class RestaurantActivity extends ListActivity implements OnConnectionFailedListener, ConnectionCallbacks {
@@ -39,6 +40,7 @@ public class RestaurantActivity extends ListActivity implements OnConnectionFail
 
 
     protected final int MY_PERMISSIONS_REQUEST_READ_LOCATION = 1;
+    /*For notification*/
     private static IdpResponse idpResponse = null;
     public static Intent createIntent(Context context,IdpResponse response){
         Intent intent = new Intent(context,RestaurantActivity.class);
@@ -56,6 +58,7 @@ public class RestaurantActivity extends ListActivity implements OnConnectionFail
         // TODO: insert convert latitude-longitude to zipcode logic
 
         new FetchRestaurantTask().execute("85281");
+        startService(NotificationService.createIntentOverSpeedNotificationService(getApplicationContext()));
 
     }
 

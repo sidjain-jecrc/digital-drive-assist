@@ -26,13 +26,10 @@
         android:theme="@style/AppTheme">
         <meta-data android:name="com.google.android.gms.version" />
 
-        <activity android:name=".activities.RestaurantActivity">
-
-
-        </activity>
+        <activity android:name=".activities.RestaurantActivity"></activity>
 
         <service
-            android:name=".activities.services.SampleService"
+            android:name=".activities.services.NotificationService"
             android:enabled="true"
             android:exported="true" />
 
@@ -44,6 +41,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".activities.utility.ResultActivity"></activity>
     </application>
 
 </manifest>
