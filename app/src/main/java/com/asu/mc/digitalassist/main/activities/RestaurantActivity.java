@@ -48,30 +48,7 @@ public class RestaurantActivity extends ListActivity implements OnConnectionFail
     protected boolean mAddressRequested;
     protected String mCurrentZipCode;
 
-//    protected TextView textLatitude;
-//    protected TextView textLongitude;
-//    protected TextView textUpdatedTime;
-
     protected final int MY_PERMISSIONS_REQUEST_READ_LOCATION = 1;
-
-    class AddressResultReceiver extends ResultReceiver {
-
-        public AddressResultReceiver(Handler handler) {
-            super(handler);
-        }
-
-        @Override
-        protected void onReceiveResult(int resultCode, Bundle resultData) {
-
-            if (resultCode == Constants.SUCCESS_RESULT) {
-                Log.d(TAG, getString(R.string.restaurant_address_zip_found));
-                mCurrentZipCode = resultData.getString(Constants.RESULT_DATA_KEY);
-            } else {
-                Log.d(TAG, getString(R.string.restaurant_address_zip_not_found));
-                mCurrentZipCode = getString(R.string.restaurant_address_zip_not_found);
-            }
-        }
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,7 +60,6 @@ public class RestaurantActivity extends ListActivity implements OnConnectionFail
         // TODO: Find a way to persist zip address so that it can retrieved anywhere in app
         String homeZipCode = getIntent().getStringExtra("EXTRA_HOME_ZIP");
 
-        // TODO: insert convert latitude-longitude to zipcode logic
         // starting address intent service
         if (mGoogleApiClient.isConnected() && mLastLocation != null) {
             startAddressIntentService();
@@ -104,6 +80,25 @@ public class RestaurantActivity extends ListActivity implements OnConnectionFail
         startService(intent);
     }
 
+    class AddressResultReceiver extends ResultReceiver {
+
+        public AddressResultReceiver(Handler handler) {
+            super(handler);
+        }
+
+        @Override
+        protected void onReceiveResult(int resultCode, Bundle resultData) {
+
+            if (resultCode == Constants.SUCCESS_RESULT) {
+                Log.d(TAG, getString(R.string.restaurant_address_zip_found));
+                mCurrentZipCode = resultData.getString(Constants.RESULT_DATA_KEY);
+            } else {
+                Log.d(TAG, getString(R.string.restaurant_address_zip_not_found));
+                mCurrentZipCode = getString(R.string.restaurant_address_zip_not_found);
+            }
+        }
+    }
+
     public static void getCurrentKnownLocation(GoogleApiClient mGoogleApiClient) {
         Log.d(TAG, "Inside getCurrentKnownLocation method");
 
@@ -121,16 +116,19 @@ public class RestaurantActivity extends ListActivity implements OnConnectionFail
     }
 
     protected void createLocationRequest() {
-        Log.d(TAG, "Inside createLocationRequest method");
+        Log.d(TAG, "Inside createLocationRequest");
 
+        // displacement takes precedence over time interval
         mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(10000);
-        mLocationRequest.setFastestInterval(5000);
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        mLocationRequest.setInterval(60000); // 1 minute
+        mLocationRequest.setFastestInterval(5000); // 5 seconds
+        mLocationRequest.setSmallestDisplacement(10); // 10 meters displacement
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
 
     }
 
     protected void startLocationUpdates() {
+        Log.d(TAG, "Inside startLocationUpdates");
         checkAppPermissions();
         try {
             LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
@@ -141,7 +139,11 @@ public class RestaurantActivity extends ListActivity implements OnConnectionFail
 
     @Override
     public void onLocationChanged(Location location) {
-        mLastLocation = location;
+        Log.d(TAG, "Inside onLocationChanged");
+        mLastLocation.set(location);
+        if (mGoogleApiClient.isConnected() && mLastLocation != null) {
+            startAddressIntentService();
+        }
     }
 
     private class FetchRestaurantTask extends AsyncTask<String, Void, List<Restaurant>> {
@@ -239,6 +241,7 @@ public class RestaurantActivity extends ListActivity implements OnConnectionFail
                 return;
             }
             if (mAddressRequested) {
+                Log.d(TAG, "starting address intent service");
                 startAddressIntentService();
             }
         }

@@ -3,6 +3,12 @@ package com.asu.mc.digitalassist.main.services;
 import android.app.IntentService;
 import android.content.Intent;
 import android.content.Context;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.Bundle;
+import android.util.Log;
+
 
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
@@ -12,80 +18,123 @@ import android.content.Context;
  * helper methods.
  */
 public class LocationTrackerService extends IntentService {
-    // TODO: Rename actions, choose action names that describe tasks that this
-    // IntentService can perform, e.g. ACTION_FETCH_NEW_ITEMS
-    private static final String ACTION_FOO = "com.asu.mc.digitalassist.activities.services.action.FOO";
-    private static final String ACTION_BAZ = "com.asu.mc.digitalassist.activities.services.action.BAZ";
 
-    // TODO: Rename parameters
-    private static final String EXTRA_PARAM1 = "com.asu.mc.digitalassist.activities.services.extra.PARAM1";
-    private static final String EXTRA_PARAM2 = "com.asu.mc.digitalassist.activities.services.extra.PARAM2";
+    protected static final String TAG = LocationTrackerService.class.getSimpleName();
+
+    private static final String ACTION_LOCATION_TRACK = "com.asu.mc.digitalassist.activities.services.action.loc.track";
+
+    private LocationManager mLocationManager = null;
+    private static final int LOCATION_UPDATE_INTERVAL = 60000; // 1 minute
+    private static final float LOCATION_UPDATE_DISTANCE = 10f; // 10 meters
+
+    private static String homeZip = null;
+    private static final String EXTRA_HOME_ZIP = "com.asu.mc.digitalassist.activities.services.extra.homezip";
+
+    private class LocationTracker implements LocationListener {
+
+        Location mLastLocation;
+
+        public LocationTracker(String provider) {
+            Log.d(TAG, "Location instance created");
+            this.mLastLocation = new Location(provider);
+        }
+
+        @Override
+        public void onLocationChanged(Location location) {
+            Log.e(TAG, "onLocationChanged: " + location);
+            mLastLocation.set(location);
+
+            // TODO: whenever location updates check if the user is still in home zip, if not notify user
+
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle bundle) {
+            Log.e(TAG, "onStatusChanged: " + provider);
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {
+            Log.e(TAG, "onProviderDisabled: " + provider);
+        }
+
+        @Override
+        public void onProviderEnabled(String provider) {
+            Log.e(TAG, "onProviderEnabled: " + provider);
+        }
+
+    }
+
+    private void initializeLocationManager() {
+        Log.e(TAG, "initializeLocationManager");
+        if (mLocationManager == null) {
+            mLocationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
+        }
+    }
 
     public LocationTrackerService() {
-        super("LocationTrackerService");
+        super(TAG);
     }
 
-    /**
-     * Starts this service to perform action Foo with the given parameters. If
-     * the service is already performing a task this action will be queued.
-     *
-     * @see IntentService
-     */
-    // TODO: Customize helper method
-    public static void startActionFoo(Context context, String param1, String param2) {
+    public static void starLocationTrackerAction(Context context, String homeZipCode) {
         Intent intent = new Intent(context, LocationTrackerService.class);
-        intent.setAction(ACTION_FOO);
-        intent.putExtra(EXTRA_PARAM1, param1);
-        intent.putExtra(EXTRA_PARAM2, param2);
-        context.startService(intent);
-    }
-
-    /**
-     * Starts this service to perform action Baz with the given parameters. If
-     * the service is already performing a task this action will be queued.
-     *
-     * @see IntentService
-     */
-    // TODO: Customize helper method
-    public static void startActionBaz(Context context, String param1, String param2) {
-        Intent intent = new Intent(context, LocationTrackerService.class);
-        intent.setAction(ACTION_BAZ);
-        intent.putExtra(EXTRA_PARAM1, param1);
-        intent.putExtra(EXTRA_PARAM2, param2);
+        intent.setAction(ACTION_LOCATION_TRACK);
+        intent.putExtra(EXTRA_HOME_ZIP, homeZipCode);
         context.startService(intent);
     }
 
     @Override
     protected void onHandleIntent(Intent intent) {
+        Log.d(TAG, "onHandleIntent");
+
         if (intent != null) {
             final String action = intent.getAction();
-            if (ACTION_FOO.equals(action)) {
-                final String param1 = intent.getStringExtra(EXTRA_PARAM1);
-                final String param2 = intent.getStringExtra(EXTRA_PARAM2);
-                handleActionFoo(param1, param2);
-            } else if (ACTION_BAZ.equals(action)) {
-                final String param1 = intent.getStringExtra(EXTRA_PARAM1);
-                final String param2 = intent.getStringExtra(EXTRA_PARAM2);
-                handleActionBaz(param1, param2);
+            if (ACTION_LOCATION_TRACK.equals(action)) {
+                homeZip = intent.getStringExtra(EXTRA_HOME_ZIP);
+                handleLocationTrackerAction();
             }
         }
     }
 
-    /**
-     * Handle action Foo in the provided background thread with the provided
-     * parameters.
-     */
-    private void handleActionFoo(String param1, String param2) {
-        // TODO: Handle action Foo
-        throw new UnsupportedOperationException("Not yet implemented");
+    LocationListener[] mLocationListeners = new LocationListener[]{
+            new LocationTracker(LocationManager.GPS_PROVIDER),
+            new LocationTracker(LocationManager.NETWORK_PROVIDER)
+    };
+
+    @Override
+    public void onDestroy() {
+        Log.d(TAG, "onDestroy");
+        super.onDestroy();
+
+        if (mLocationManager != null) {
+            for (int i = 0; i < mLocationListeners.length; i++) {
+                try {
+                    mLocationManager.removeUpdates(mLocationListeners[i]);
+                } catch (Exception ex) {
+                    Log.e(TAG, "failed to remove location listeners, ignore", ex);
+                }
+            }
+        }
     }
 
-    /**
-     * Handle action Baz in the provided background thread with the provided
-     * parameters.
-     */
-    private void handleActionBaz(String param1, String param2) {
-        // TODO: Handle action Baz
-        throw new UnsupportedOperationException("Not yet implemented");
+    private void handleLocationTrackerAction() {
+
+        initializeLocationManager();
+
+        try {
+            mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, LOCATION_UPDATE_INTERVAL, LOCATION_UPDATE_DISTANCE, mLocationListeners[1]);
+        } catch (java.lang.SecurityException ex) {
+            Log.e(TAG, "fail to request location update, ignore", ex);
+        } catch (IllegalArgumentException ex) {
+            Log.e(TAG, "network provider does not exist, " + ex.getMessage());
+        }
+        try {
+            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_UPDATE_INTERVAL, LOCATION_UPDATE_DISTANCE, mLocationListeners[0]);
+        } catch (java.lang.SecurityException ex) {
+            Log.i(TAG, "fail to request location update, ignore", ex);
+        } catch (IllegalArgumentException ex) {
+            Log.d(TAG, "gps provider does not exist " + ex.getMessage());
+        }
     }
+
 }
