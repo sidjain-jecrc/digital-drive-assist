@@ -1,4 +1,4 @@
-package com.asu.mc.digitalassist.activities.services;
+package com.asu.mc.digitalassist.main.services;
 
 import android.app.IntentService;
 import android.content.Intent;

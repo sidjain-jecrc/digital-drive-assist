@@ -1,4 +1,4 @@
-package com.asu.mc.digitalassist.activities;
+package com.asu.mc.digitalassist.main.activities;
 
 import android.Manifest;
 import android.app.ListActivity;
@@ -20,12 +20,11 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.asu.mc.digitalassist.R;
-import com.asu.mc.digitalassist.activities.models.Restaurant;
-import com.asu.mc.digitalassist.activities.rsclient.RestaurantApiClient;
-import com.asu.mc.digitalassist.activities.services.GeoCodingService;
-import com.asu.mc.digitalassist.activities.services.NotificationService;
-import com.asu.mc.digitalassist.activities.utility.Constants;
-import com.asu.mc.digitalassist.activities.utility.RestaurantListAdapter;
+import com.asu.mc.digitalassist.main.models.Restaurant;
+import com.asu.mc.digitalassist.main.rsclient.RestaurantApiClient;
+import com.asu.mc.digitalassist.main.services.GeoCodingService;
+import com.asu.mc.digitalassist.main.utility.Constants;
+import com.asu.mc.digitalassist.main.utility.RestaurantListAdapter;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
@@ -34,8 +33,6 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
-import java.text.DateFormat;
-import java.util.Date;
 import java.util.List;
 
 public class RestaurantActivity extends ListActivity implements OnConnectionFailedListener, ConnectionCallbacks, LocationListener {

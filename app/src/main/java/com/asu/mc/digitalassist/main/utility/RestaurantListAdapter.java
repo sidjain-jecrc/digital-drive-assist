@@ -1,4 +1,4 @@
-package com.asu.mc.digitalassist.activities.utility;
+package com.asu.mc.digitalassist.main.utility;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -10,7 +10,7 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.asu.mc.digitalassist.R;
-import com.asu.mc.digitalassist.activities.models.Restaurant;
+import com.asu.mc.digitalassist.main.models.Restaurant;
 
 import java.util.List;
 

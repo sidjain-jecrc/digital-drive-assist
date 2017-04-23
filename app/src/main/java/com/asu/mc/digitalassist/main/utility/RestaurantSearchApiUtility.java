@@ -1,4 +1,4 @@
-package com.asu.mc.digitalassist.activities.utility;
+package com.asu.mc.digitalassist.main.utility;
 
 import org.scribe.builder.ServiceBuilder;
 import org.scribe.model.OAuthRequest;

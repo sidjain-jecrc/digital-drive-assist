@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="com.asu.mc.digitalassist.activities.UserProfileActivity"
+    tools:context="com.asu.mc.digitalassist.main.activities.UserProfileActivity"
     tools:layout_editor_absoluteX="0dp"
     tools:layout_editor_absoluteY="81dp">
 

@@ -26,28 +26,28 @@
         android:theme="@style/AppTheme">
         <meta-data android:name="com.google.android.gms.version" />
 
-        <activity android:name=".activities.LoginActivity">
+        <activity android:name=".main.activities.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.RestaurantActivity" />
-        <activity android:name=".activities.UserProfileActivity" />
-        <activity android:name=".activities.RestaurantWebViewActivity" />
-        <activity android:name=".activities.OverSpeedActivity" />
+        <activity android:name=".main.activities.RestaurantActivity" />
+        <activity android:name=".main.activities.UserProfileActivity" />
+        <activity android:name=".main.activities.RestaurantWebViewActivity" />
+        <activity android:name=".main.activities.OverSpeedActivity" />
 
         <service
-            android:name=".activities.services.NotificationService"
+            android:name=".main.services.NotificationService"
             android:description="@string/service_notification"
             android:enabled="true"
             android:exported="true" />
         <service
-            android:name=".activities.services.GeoCodingService"
+            android:name=".main.services.GeoCodingService"
             android:exported="false" />
         <service
-            android:name=".activities.services.LocationTrackerService"
+            android:name=".main.services.LocationTrackerService"
             android:exported="false"></service>
     </application>
 

@@ -1,4 +1,4 @@
-package com.asu.mc.digitalassist.activities.models;
+package com.asu.mc.digitalassist.main.models;
 
 /**
  * Created by Siddharth on 4/17/2017.

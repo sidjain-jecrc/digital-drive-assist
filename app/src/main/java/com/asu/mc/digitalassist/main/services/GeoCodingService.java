@@ -1,4 +1,4 @@
-package com.asu.mc.digitalassist.activities.services;
+package com.asu.mc.digitalassist.main.services;
 
 import android.app.IntentService;
 import android.content.Intent;
@@ -11,8 +11,7 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.asu.mc.digitalassist.R;
-import com.asu.mc.digitalassist.activities.rsclient.RestaurantApiClient;
-import com.asu.mc.digitalassist.activities.utility.Constants;
+import com.asu.mc.digitalassist.main.utility.Constants;
 
 import java.io.IOException;
 import java.util.List;

@@ -1,19 +1,11 @@
-package com.asu.mc.digitalassist.activities.utility;
+package com.asu.mc.digitalassist.main.utility;
 
-import android.content.IntentSender;
 import android.location.Location;
 import android.util.Log;
 
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.PendingResult;
-import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.LocationSettingsRequest;
-import com.google.android.gms.location.LocationSettingsResult;
-import com.google.android.gms.location.LocationSettingsStates;
-import com.google.android.gms.location.LocationSettingsStatusCodes;
 
 /**
  * Created by Siddharth on 4/16/2017.

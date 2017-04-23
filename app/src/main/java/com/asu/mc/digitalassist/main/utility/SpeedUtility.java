@@ -1,4 +1,4 @@
-package com.asu.mc.digitalassist.activities.utility;
+package com.asu.mc.digitalassist.main.utility;
 
 import android.util.Log;
 

@@ -1,13 +1,11 @@
-package com.asu.mc.digitalassist.activities;
+package com.asu.mc.digitalassist.main.activities;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
-import android.widget.TextView;
 
 import com.asu.mc.digitalassist.R;
-import com.google.android.gms.vision.text.Text;
 
 public class RestaurantWebViewActivity extends AppCompatActivity {
 

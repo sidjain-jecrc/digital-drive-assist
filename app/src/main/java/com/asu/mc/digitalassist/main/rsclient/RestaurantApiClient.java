@@ -1,9 +1,9 @@
-package com.asu.mc.digitalassist.activities.rsclient;
+package com.asu.mc.digitalassist.main.rsclient;
 
 import android.util.Log;
 
-import com.asu.mc.digitalassist.activities.models.Restaurant;
-import com.asu.mc.digitalassist.activities.utility.RestaurantSearchApiUtility;
+import com.asu.mc.digitalassist.main.models.Restaurant;
+import com.asu.mc.digitalassist.main.utility.RestaurantSearchApiUtility;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;

@@ -1,4 +1,4 @@
-package com.asu.mc.digitalassist.activities.utility;
+package com.asu.mc.digitalassist.main.utility;
 
 /**
  * Created by Siddharth on 4/17/2017.

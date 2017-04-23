@@ -1,7 +1,6 @@
-package com.asu.mc.digitalassist.activities.services;
+package com.asu.mc.digitalassist.main.services;
 
 import android.app.IntentService;
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.TaskStackBuilder;
@@ -11,8 +10,8 @@ import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 
 import com.asu.mc.digitalassist.R;
-import com.asu.mc.digitalassist.activities.OverSpeedActivity;
-import com.asu.mc.digitalassist.activities.RestaurantActivity;
+import com.asu.mc.digitalassist.main.activities.OverSpeedActivity;
+import com.asu.mc.digitalassist.main.activities.RestaurantActivity;
 
 public class NotificationService extends IntentService {
 
