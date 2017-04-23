@@ -1,6 +1,16 @@
 <resources>
     <string name="app_name">Digital Driver Assist</string>
-    <string name = "no_location_data_provided"> No Location </string>
+    <string name="service_notification"> Service for providing critical notifications </string>
+    <string name="user_profile_title_text">Please Complete Profile</string>
+
+    <string name="geocoding_service_no_location_data_provided"> No Location data provided </string>
+    <string name="geocoding_service_not_available">Network connectivity issue</string>
+    <string name="geocoding_service_invalid_lat_long_used">Invalid latitude longitude used</string>
+
+    <string name="restaurant_no_geocoder_available">No geocoder present</string>
+    <string name="restaurant_address_zip_found">Corresponding zipcode found</string>
+    <string name="restaurant_address_zip_not_found">Corresponding zipcode not found</string>
+
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

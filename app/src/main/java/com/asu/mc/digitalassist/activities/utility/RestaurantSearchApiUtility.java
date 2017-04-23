@@ -12,7 +12,7 @@ import org.scribe.oauth.OAuthService;
  */
 
 public class RestaurantSearchApiUtility {
-    private static final int SEARCH_LIMIT = 10;
+    private static final int SEARCH_LIMIT = 20;
     // Set search radius as maximum of 4 miles(approx. 6478 meters)
     private static final int SEARCH_RADIUS = 6478;
     // To retrieve results sorted by distance

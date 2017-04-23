@@ -1,11 +1,19 @@
 package com.asu.mc.digitalassist.activities.utility;
 
+import android.content.IntentSender;
 import android.location.Location;
 import android.util.Log;
 
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResult;
+import com.google.android.gms.location.LocationSettingsStates;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
 
 /**
  * Created by Siddharth on 4/16/2017.
@@ -17,7 +25,7 @@ public class LocationUtility {
     protected static Location mLastLocation;
 
     // return lat,long coordinates of current location
-    public static String getCurrentKnownLocation(GoogleApiClient mGoogleApiClient){
+    public static String getCurrentKnownLocation(GoogleApiClient mGoogleApiClient) {
         Log.d(TAG, "Inside getCurrentKnownLocation method");
         String latLongString = null;
         try {
@@ -35,13 +43,14 @@ public class LocationUtility {
         return latLongString;
     }
 
-    protected void createLocationRequest() {
+    protected void createLocationRequest(GoogleApiClient mGoogleApiClient) {
         Log.d(TAG, "Inside createLocationRequest method");
 
         LocationRequest mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(10000);
         mLocationRequest.setFastestInterval(5000);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
     }
 
 

@@ -2,12 +2,14 @@ package com.asu.mc.digitalassist.activities;
 
 import android.Manifest;
 import android.app.ListActivity;
-import android.app.Notification;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Geocoder;
+import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.ResultReceiver;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -15,52 +17,134 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.asu.mc.digitalassist.R;
 import com.asu.mc.digitalassist.activities.models.Restaurant;
 import com.asu.mc.digitalassist.activities.rsclient.RestaurantApiClient;
+import com.asu.mc.digitalassist.activities.services.GeoCodingService;
 import com.asu.mc.digitalassist.activities.services.NotificationService;
+import com.asu.mc.digitalassist.activities.utility.Constants;
 import com.asu.mc.digitalassist.activities.utility.RestaurantListAdapter;
-import com.firebase.ui.auth.IdpResponse;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+
+import java.text.DateFormat;
+import java.util.Date;
 import java.util.List;
 
-public class RestaurantActivity extends ListActivity implements OnConnectionFailedListener, ConnectionCallbacks {
+public class RestaurantActivity extends ListActivity implements OnConnectionFailedListener, ConnectionCallbacks, LocationListener {
 
     protected static final String TAG = RestaurantActivity.class.getSimpleName();
 
     protected GoogleApiClient mGoogleApiClient;
     protected RestaurantApiClient mRestaurantApiClient;
-    protected ListView restaurantListView;
+    protected static Location mLastLocation;
+    protected static LocationRequest mLocationRequest;
 
+    private AddressResultReceiver mResultReceiver;
+    protected boolean mAddressRequested;
+    protected String mCurrentZipCode;
+
+//    protected TextView textLatitude;
+//    protected TextView textLongitude;
+//    protected TextView textUpdatedTime;
 
     protected final int MY_PERMISSIONS_REQUEST_READ_LOCATION = 1;
-    /*For notification*/
-    private static IdpResponse idpResponse = null;
-    public static Intent createIntent(Context context,IdpResponse response){
-        Intent intent = new Intent(context,RestaurantActivity.class);
-        idpResponse = response;
-        return intent;
+
+    class AddressResultReceiver extends ResultReceiver {
+
+        public AddressResultReceiver(Handler handler) {
+            super(handler);
+        }
+
+        @Override
+        protected void onReceiveResult(int resultCode, Bundle resultData) {
+
+            if (resultCode == Constants.SUCCESS_RESULT) {
+                Log.d(TAG, getString(R.string.restaurant_address_zip_found));
+                mCurrentZipCode = resultData.getString(Constants.RESULT_DATA_KEY);
+            } else {
+                Log.d(TAG, getString(R.string.restaurant_address_zip_not_found));
+                mCurrentZipCode = getString(R.string.restaurant_address_zip_not_found);
+            }
+        }
     }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        setContentView(R.layout.activity_main);
-//        restaurantListView = (ListView) findViewById(R.id.restaurant_listView);
-//        checkAppPermissions();
-//        buildGoogleApiClient();
+
+        checkAppPermissions();
+        buildGoogleApiClient();
+
+        // TODO: Find a way to persist zip address so that it can retrieved anywhere in app
+        String homeZipCode = getIntent().getStringExtra("EXTRA_HOME_ZIP");
 
         // TODO: insert convert latitude-longitude to zipcode logic
+        // starting address intent service
+        if (mGoogleApiClient.isConnected() && mLastLocation != null) {
+            startAddressIntentService();
+            mAddressRequested = true;
+        }
 
-        new FetchRestaurantTask().execute("85281");
-        startService(NotificationService.createIntentOverSpeedNotificationService(getApplicationContext()));
+        if (mCurrentZipCode != null && !mCurrentZipCode.equals(getString(R.string.restaurant_address_zip_not_found))) {
+            new FetchRestaurantTask().execute(mCurrentZipCode);
+        } else {
+            new FetchRestaurantTask().execute(homeZipCode);
+        }
+    }
 
+    protected void startAddressIntentService() {
+        Intent intent = new Intent(this, GeoCodingService.class);
+        intent.putExtra(Constants.RECEIVER, mResultReceiver);
+        intent.putExtra(Constants.LOCATION_DATA_EXTRA, mLastLocation);
+        startService(intent);
+    }
+
+    public static void getCurrentKnownLocation(GoogleApiClient mGoogleApiClient) {
+        Log.d(TAG, "Inside getCurrentKnownLocation method");
+
+        String latLongString = null;
+        try {
+            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+            if (mLastLocation != null) {
+                Log.d(TAG, "Setting lat, long coordinates");
+                latLongString = String.valueOf(mLastLocation.getLatitude()) + "," + String.valueOf(mLastLocation.getLongitude());
+            }
+        } catch (SecurityException e) {
+            Log.e(TAG, "Error: " + e);
+        }
+        Log.i(TAG, "Current location being returned: " + latLongString);
+    }
+
+    protected void createLocationRequest() {
+        Log.d(TAG, "Inside createLocationRequest method");
+
+        mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(10000);
+        mLocationRequest.setFastestInterval(5000);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+    }
+
+    protected void startLocationUpdates() {
+        checkAppPermissions();
+        try {
+            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+        } catch (SecurityException e) {
+            Log.e(TAG, "LocationUpdates Error: " + e);
+        }
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        mLastLocation = location;
     }
 
     private class FetchRestaurantTask extends AsyncTask<String, Void, List<Restaurant>> {
@@ -126,7 +210,7 @@ public class RestaurantActivity extends ListActivity implements OnConnectionFail
         Log.d(TAG, "Inside On Start");
         super.onStart();
 
-//        mGoogleApiClient.connect();
+        mGoogleApiClient.connect();
     }
 
     @Override
@@ -134,9 +218,9 @@ public class RestaurantActivity extends ListActivity implements OnConnectionFail
         Log.d(TAG, "Inside On Destroy");
         super.onDestroy();
 
-//        if (mGoogleApiClient.isConnected()) {
-//            mGoogleApiClient.disconnect();
-//        }
+        if (mGoogleApiClient.isConnected()) {
+            mGoogleApiClient.disconnect();
+        }
     }
 
     @Override
@@ -148,9 +232,21 @@ public class RestaurantActivity extends ListActivity implements OnConnectionFail
     public void onConnected(@Nullable Bundle bundle) {
         Log.d(TAG, "Inside OnConnected");
 
-//        checkAppPermissions();
-//        String latLong = LocationUtility.getCurrentKnownLocation(mGoogleApiClient);
-//        String[] coordinates = latLong.split(",");
+        checkAppPermissions();
+        getCurrentKnownLocation(mGoogleApiClient);
+
+        // in case service was not started earlier, starting it here
+        if (mLastLocation != null) {
+            if (!Geocoder.isPresent()) {
+                Toast.makeText(this, R.string.restaurant_no_geocoder_available, Toast.LENGTH_LONG).show();
+                return;
+            }
+            if (mAddressRequested) {
+                startAddressIntentService();
+            }
+        }
+        createLocationRequest();
+        startLocationUpdates();
     }
 
     @Override
@@ -171,6 +267,6 @@ public class RestaurantActivity extends ListActivity implements OnConnectionFail
     @Override
     public void onConnectionSuspended(int i) {
         Log.i(TAG, "Inside On onConnectionSuspended");
-//        mGoogleApiClient.connect();
+        mGoogleApiClient.connect();
     }
 }

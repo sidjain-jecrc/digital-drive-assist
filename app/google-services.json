@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "1054203021369-19573lvhhb39tocmp0q0m4t2hmh7t8pc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.asu.mc.digitalassist",
+            "certificate_hash": "009ec339937cd72d2b9afbee5b9e7deb8e62482c"
+          }
+        },
+        {
           "client_id": "1054203021369-jht2n5cc8re9u9nb8lgpii40rmnfttfo.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
