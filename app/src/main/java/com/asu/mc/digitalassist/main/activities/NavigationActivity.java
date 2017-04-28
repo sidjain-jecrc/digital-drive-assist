@@ -32,7 +32,7 @@ public class NavigationActivity extends AppCompatActivity {
         btnMoveToRestaurants.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(getApplicationContext(), Restaurant.class));
+                startActivity(new Intent(getApplicationContext(), RestaurantActivity.class));
             }
         });
 
