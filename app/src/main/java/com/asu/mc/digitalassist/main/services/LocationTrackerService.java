@@ -1,22 +1,20 @@
 package com.asu.mc.digitalassist.main.services;
 
 import android.app.IntentService;
-import android.content.Intent;
 import android.content.Context;
+import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.ResultReceiver;
 import android.util.Log;
 
+import com.asu.mc.digitalassist.R;
+import com.asu.mc.digitalassist.main.utility.Constants;
 
-/**
- * An {@link IntentService} subclass for handling asynchronous task requests in
- * a service on a separate handler thread.
- * <p>
- * TODO: Customize class - update intent actions, extra parameters and static
- * helper methods.
- */
+
 public class LocationTrackerService extends IntentService {
 
     protected static final String TAG = LocationTrackerService.class.getSimpleName();
@@ -28,11 +26,22 @@ public class LocationTrackerService extends IntentService {
     private static final float LOCATION_UPDATE_DISTANCE = 10f; // 10 meters
 
     private static String homeZip = null;
+    private static boolean isGpsEnabled = false;
+    private static boolean isNetworkEnabled = false;
+
     private static final String EXTRA_HOME_ZIP = "com.asu.mc.digitalassist.activities.services.extra.homezip";
+    protected String mCurrentZipCode;
+
+    LocationListener[] mLocationListeners = new LocationListener[]{
+            new LocationTracker(LocationManager.GPS_PROVIDER),
+            new LocationTracker(LocationManager.NETWORK_PROVIDER)
+    };
+
 
     private class LocationTracker implements LocationListener {
 
-        Location mLastLocation;
+        protected Location mLastLocation;
+        private AddressResultReceiver mResultReceiver;
 
         public LocationTracker(String provider) {
             Log.d(TAG, "Location instance created");
@@ -45,6 +54,7 @@ public class LocationTrackerService extends IntentService {
             mLastLocation.set(location);
 
             // TODO: whenever location updates check if the user is still in home zip, if not notify user
+
 
         }
 
@@ -63,12 +73,31 @@ public class LocationTrackerService extends IntentService {
             Log.e(TAG, "onProviderEnabled: " + provider);
         }
 
+        protected void startAddressIntentService() {
+            Intent intent = new Intent(getApplicationContext(), GeoCodingService.class);
+            intent.putExtra(Constants.RECEIVER, mResultReceiver);
+            intent.putExtra(Constants.LOCATION_DATA_EXTRA, mLastLocation);
+            startService(intent);
+        }
+
     }
 
-    private void initializeLocationManager() {
-        Log.e(TAG, "initializeLocationManager");
-        if (mLocationManager == null) {
-            mLocationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
+    private class AddressResultReceiver extends ResultReceiver {
+
+        public AddressResultReceiver(Handler handler) {
+            super(handler);
+        }
+
+        @Override
+        protected void onReceiveResult(int resultCode, Bundle resultData) {
+
+            if (resultCode == Constants.SUCCESS_RESULT) {
+                Log.d(TAG, getString(R.string.restaurant_address_zip_found));
+                mCurrentZipCode = resultData.getString(Constants.RESULT_DATA_KEY);
+            } else {
+                Log.d(TAG, getString(R.string.restaurant_address_zip_not_found));
+                mCurrentZipCode = getString(R.string.restaurant_address_zip_not_found);
+            }
         }
     }
 
@@ -76,7 +105,7 @@ public class LocationTrackerService extends IntentService {
         super(TAG);
     }
 
-    public static void starLocationTrackerAction(Context context, String homeZipCode) {
+    public static void startLocationTrackerAction(Context context, String homeZipCode) {
         Intent intent = new Intent(context, LocationTrackerService.class);
         intent.setAction(ACTION_LOCATION_TRACK);
         intent.putExtra(EXTRA_HOME_ZIP, homeZipCode);
@@ -96,11 +125,6 @@ public class LocationTrackerService extends IntentService {
         }
     }
 
-    LocationListener[] mLocationListeners = new LocationListener[]{
-            new LocationTracker(LocationManager.GPS_PROVIDER),
-            new LocationTracker(LocationManager.NETWORK_PROVIDER)
-    };
-
     @Override
     public void onDestroy() {
         Log.d(TAG, "onDestroy");
@@ -119,10 +143,17 @@ public class LocationTrackerService extends IntentService {
 
     private void handleLocationTrackerAction() {
 
-        initializeLocationManager();
+        if (mLocationManager == null) {
+            mLocationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
+        }
 
         try {
             mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, LOCATION_UPDATE_INTERVAL, LOCATION_UPDATE_DISTANCE, mLocationListeners[1]);
+
+            // getting GPS and Network status
+            isGpsEnabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+            isNetworkEnabled = mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+
         } catch (java.lang.SecurityException ex) {
             Log.e(TAG, "fail to request location update, ignore", ex);
         } catch (IllegalArgumentException ex) {
