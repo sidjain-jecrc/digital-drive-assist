@@ -13,7 +13,6 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.asu.mc.digitalassist.R;
-import com.asu.mc.digitalassist.main.receivers.RestaurantAlarmReceiver;
 import com.firebase.ui.auth.IdpResponse;
 
 import java.util.Calendar;
@@ -68,15 +67,21 @@ public class UserProfileActivity extends AppCompatActivity {
         AlarmManager restaurantAlarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         Intent intentAlarm = new Intent("com.asu.mc.digitalassist.START_ALARM");
         intentAlarm.putExtra("EXTRA_HOME_ZIP", homeZipCode);
-        PendingIntent restaurantIntent = PendingIntent.getBroadcast(this, 0, intentAlarm, 0);
+        PendingIntent lunchIntent = PendingIntent.getBroadcast(this, 0, intentAlarm, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent dinnerIntent = PendingIntent.getBroadcast(this, 0, intentAlarm, PendingIntent.FLAG_UPDATE_CURRENT);
+
 
         Calendar lunchTime = Calendar.getInstance();
         lunchTime.setTimeInMillis(System.currentTimeMillis());
-        lunchTime.set(Calendar.HOUR_OF_DAY, 2);
-        lunchTime.set(Calendar.MINUTE, 19);
+        lunchTime.set(Calendar.HOUR_OF_DAY, 12);
+
+        Calendar dinnerTime = Calendar.getInstance();
+        dinnerTime.setTimeInMillis(System.currentTimeMillis());
+        dinnerTime.set(Calendar.HOUR_OF_DAY, 19);
 
         // Set the alarm for a lunch and dinner time.
-        restaurantAlarmManager.setRepeating(AlarmManager.RTC_WAKEUP, lunchTime.getTimeInMillis(), AlarmManager.INTERVAL_DAY, restaurantIntent);
+        restaurantAlarmManager.setRepeating(AlarmManager.RTC_WAKEUP, lunchTime.getTimeInMillis(), AlarmManager.INTERVAL_DAY, lunchIntent);
+        restaurantAlarmManager.setRepeating(AlarmManager.RTC_WAKEUP, dinnerTime.getTimeInMillis(), AlarmManager.INTERVAL_DAY, dinnerIntent);
 
     }
 

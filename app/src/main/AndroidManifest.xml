@@ -39,6 +39,7 @@
         <activity android:name=".main.activities.UserProfileActivity" />
         <activity android:name=".main.activities.RestaurantWebViewActivity" />
         <activity android:name=".main.activities.OverSpeedActivity" />
+        <activity android:name=".main.activities.NavigationActivity" />
 
         <service
             android:name=".main.services.NotificationService"
@@ -46,17 +47,21 @@
             android:enabled="true"
             android:exported="true" />
         <service
-            android:name=".main.services.GeoLocationTrackerService"
-            android:exported="false" />
+            android:name=".main.services.RestaurantRecommendationService"
+            android:exported="true" />
 
-        <activity android:name=".main.activities.NavigationActivity"></activity>
+        <service
+            android:name=".main.services.FetchZipCodeService"
+            android:exported="false"></service>
 
-        <receiver android:name=".main.receivers.RestaurantAlarmReceiver"  android:exported="true">
+        <receiver
+            android:name=".main.receivers.RestaurantAlarmReceiver"
+            android:exported="true">
             <intent-filter>
-                <action android:name="com.asu.mc.digitalassist.START_ALARM" >
-                </action>
+                <action android:name="com.asu.mc.digitalassist.START_ALARM"></action>
             </intent-filter>
         </receiver>
+
     </application>
 
 </manifest>

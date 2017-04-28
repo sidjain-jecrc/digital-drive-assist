@@ -22,7 +22,7 @@ import android.widget.Toast;
 import com.asu.mc.digitalassist.R;
 import com.asu.mc.digitalassist.main.models.Restaurant;
 import com.asu.mc.digitalassist.main.rsclient.RestaurantApiClient;
-import com.asu.mc.digitalassist.main.services.GeoLocationTrackerService;
+import com.asu.mc.digitalassist.main.services.FetchZipCodeService;
 import com.asu.mc.digitalassist.main.utility.Constants;
 import com.asu.mc.digitalassist.main.utility.RestaurantListAdapter;
 import com.google.android.gms.common.ConnectionResult;
@@ -38,8 +38,6 @@ import java.util.List;
 public class RestaurantActivity extends ListActivity implements OnConnectionFailedListener, ConnectionCallbacks, LocationListener {
 
     protected static final String TAG = RestaurantActivity.class.getSimpleName();
-
-    private static final String ACTION_GEOCODING = "com.asu.mc.digitalassist.activities.services.action.loc.geocode";
 
     protected GoogleApiClient mGoogleApiClient;
     protected RestaurantApiClient mRestaurantApiClient;
@@ -62,16 +60,15 @@ public class RestaurantActivity extends ListActivity implements OnConnectionFail
 
         // starting address intent service
         if (mGoogleApiClient.isConnected() && mLastLocation != null) {
-            startAddressIntentService();
+            startFetchZipCodeIntentService();
             mAddressRequested = true;
         }
     }
 
-    protected void startAddressIntentService() {
-        Log.d(TAG, "startAddressIntentService");
+    protected void startFetchZipCodeIntentService() {
+        Log.d(TAG, "startFetchZipCodeIntentService");
 
-        Intent intent = new Intent(this, GeoLocationTrackerService.class);
-        intent.setAction(ACTION_GEOCODING);
+        Intent intent = new Intent(this, FetchZipCodeService.class);
         intent.putExtra(Constants.RECEIVER, mResultReceiver);
         intent.putExtra(Constants.LOCATION_DATA_EXTRA, mLastLocation);
         startService(intent);
@@ -138,7 +135,7 @@ public class RestaurantActivity extends ListActivity implements OnConnectionFail
         Log.d(TAG, "Inside onLocationChanged");
         mLastLocation.set(location);
         if (mGoogleApiClient.isConnected() && mLastLocation != null) {
-            startAddressIntentService();
+            startFetchZipCodeIntentService();
         }
     }
 
@@ -238,7 +235,7 @@ public class RestaurantActivity extends ListActivity implements OnConnectionFail
             }
             if (mAddressRequested) {
                 Log.d(TAG, "starting address intent service");
-                startAddressIntentService();
+                startFetchZipCodeIntentService();
             }
         }
         createLocationRequest();

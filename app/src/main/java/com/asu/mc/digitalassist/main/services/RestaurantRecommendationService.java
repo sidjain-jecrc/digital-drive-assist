@@ -21,12 +21,9 @@ import java.util.List;
 import java.util.Locale;
 
 
-public class GeoLocationTrackerService extends IntentService implements LocationListener {
+public class RestaurantRecommendationService extends IntentService implements LocationListener {
 
-    protected static final String TAG = GeoLocationTrackerService.class.getSimpleName();
-
-    private static final String ACTION_TRACK_LOCATION = "com.asu.mc.digitalassist.activities.services.action.loc.track";
-    private static final String ACTION_GEOCODING = "com.asu.mc.digitalassist.activities.services.action.loc.geocode";
+    protected static final String TAG = RestaurantRecommendationService.class.getSimpleName();
 
     private static final int LOCATION_UPDATE_INTERVAL = 60000; // 1 minute
     private static final float LOCATION_UPDATE_DISTANCE = 10f; // 10 meters
@@ -38,108 +35,78 @@ public class GeoLocationTrackerService extends IntentService implements Location
 
     private LocationManager mLocationManager;
     private Location currentLocation;
-    private AddressResultReceiver mResultReceiver;
 
-    public GeoLocationTrackerService() {
+    public RestaurantRecommendationService() {
         super(TAG);
     }
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        Log.d(TAG, "<-----------onHandleIntent------------->");
+        Log.d(TAG, "onHandleIntent");
 
         if (intent != null) {
-
-            final String action = intent.getAction();
-            if (ACTION_TRACK_LOCATION.equals(action)) {
-                Log.d(TAG, "ACTION_TRACK_LOCATION");
-
-                mResultReceiver = new AddressResultReceiver(new Handler());
-                mHomeZip = intent.getStringExtra("EXTRA_HOME_ZIP");
-                handleLocationTrackerAction();
-
-            } else if (ACTION_GEOCODING.equals(action)) {
-                Log.d(TAG, "ACTION_GEOCODING");
-
-                mResultReceiver = new AddressResultReceiver(new Handler());
-                handleGeoCodingAction(intent);
-            }
+            mHomeZip = intent.getStringExtra("EXTRA_HOME_ZIP");
+            handleLocationTrackerAction();
         }
     }
 
     public static void startLocationTrackerAction(Context context, String homeZipCode) {
-        Log.d(TAG, "<------------startLocationTrackerAction------------->");
+        Log.d(TAG, "startLocationTrackerAction");
 
-        Intent intent = new Intent(context, GeoLocationTrackerService.class);
-        intent.setAction(ACTION_TRACK_LOCATION);
+        Intent intent = new Intent(context, RestaurantRecommendationService.class);
+
+        //TODO: fetch home zip from SQLite database instead of intent
         intent.putExtra("EXTRA_HOME_ZIP", homeZipCode);
+
         context.startService(intent);
     }
 
-    protected void startAddressIntentService() {
-        Log.d(TAG, "startAddressIntentService");
-
-        Intent intent = new Intent(this, GeoLocationTrackerService.class);
-        intent.setAction(ACTION_GEOCODING);
-        intent.putExtra(Constants.RECEIVER, mResultReceiver);
-        intent.putExtra(Constants.LOCATION_DATA_EXTRA, currentLocation);
-        startService(intent);
-    }
-
-    public void handleGeoCodingAction(Intent intent) {
+    public void handleGeoCodingAction() {
         Log.d(TAG, "handleGeoCodingAction");
 
         String errorMessage = "";
         List<Address> addresses = null;
 
-        Location location = intent.getParcelableExtra(Constants.LOCATION_DATA_EXTRA);
-        if (location == null) {
+        if (currentLocation == null) {
             errorMessage = getString(R.string.geocoding_service_no_location_data_provided);
             Log.e(TAG, errorMessage);
-            deliverResultToReceiver(Constants.FAILURE_RESULT, errorMessage);
-        }
-
-        mResultReceiver = (AddressResultReceiver) intent.getParcelableExtra(Constants.RECEIVER);
-        if (mResultReceiver == null) {
-            Log.e(TAG, "No receiver received. There is nowhere to send the results.");
-            return;
         }
 
         Geocoder geocoder = new Geocoder(this, Locale.getDefault());
         try {
             // Here 1 represent max location result to returned, by documents it recommended 1 to 5
-            addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+            addresses = geocoder.getFromLocation(currentLocation.getLatitude(), currentLocation.getLongitude(), 1);
             if (addresses != null || addresses.size() > 0) {
-                String zipResponse = addresses.get(0).getPostalCode();
-                Log.d(TAG, "Fetched zip code : " + zipResponse);
-                deliverResultToReceiver(Constants.SUCCESS_RESULT, zipResponse);
+                mCurrentZipCode = addresses.get(0).getPostalCode();
+
+                Log.d(TAG, "Home zip code : " + mHomeZip);
+                Log.d(TAG, "Fetched zip code : " + mCurrentZipCode);
+
+                // compare home zip with current zip and start notification service
+                if (mHomeZip != null && mCurrentZipCode != null && !mHomeZip.equalsIgnoreCase(mCurrentZipCode)) {
+                    Log.d(TAG, "restaurant recommnedation notification");
+                    Intent recommendService = NotificationService.createIntentRecommendationNotificationService(RestaurantRecommendationService.this);
+                    startService(recommendService);
+                } else {
+                    Log.d(TAG, "User is in home zip, hence no recommendation");
+                }
+
             } else {
                 if (errorMessage.isEmpty()) {
                     errorMessage = "No address found";
                     Log.e(TAG, errorMessage);
-                    deliverResultToReceiver(Constants.FAILURE_RESULT, errorMessage);
                 }
             }
         } catch (IOException ioException) {
             errorMessage = getString(R.string.geocoding_service_not_available);
             Log.e(TAG, errorMessage, ioException);
-            deliverResultToReceiver(Constants.FAILURE_RESULT, errorMessage);
 
         } catch (IllegalArgumentException illegalArgumentException) {
             errorMessage = getString(R.string.geocoding_service_invalid_lat_long_used);
-            Log.e(TAG, errorMessage + ". " + "Latitude = " + location.getLatitude() +
-                    ", Longitude = " + location.getLongitude(), illegalArgumentException);
-            deliverResultToReceiver(Constants.FAILURE_RESULT, errorMessage);
+            Log.e(TAG, errorMessage + ". " + "Latitude = " + currentLocation.getLatitude() +
+                    ", Longitude = " + currentLocation.getLongitude(), illegalArgumentException);
         }
 
-    }
-
-    public void deliverResultToReceiver(int resultCode, String message) {
-
-        Log.d(TAG, "Inside deliverResultToReceiver");
-        Bundle bundle = new Bundle();
-        bundle.putString(Constants.RESULT_DATA_KEY, message);
-        mResultReceiver.send(resultCode, bundle);
     }
 
     @Override
@@ -148,7 +115,7 @@ public class GeoLocationTrackerService extends IntentService implements Location
         super.onDestroy();
 
         if (mLocationManager != null) {
-            mLocationManager.removeUpdates(GeoLocationTrackerService.this);
+            mLocationManager.removeUpdates(RestaurantRecommendationService.this);
         }
     }
 
@@ -171,7 +138,7 @@ public class GeoLocationTrackerService extends IntentService implements Location
                 if (mLocationManager != null) {
                     currentLocation = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
                     if (currentLocation != null) {
-                        startAddressIntentService();
+                        handleGeoCodingAction();
                     } else {
                         Log.d(TAG, "location: " + currentLocation);
                     }
@@ -191,7 +158,7 @@ public class GeoLocationTrackerService extends IntentService implements Location
                 if (mLocationManager != null) {
                     currentLocation = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
                     if (currentLocation != null) {
-                        startAddressIntentService();
+                        handleGeoCodingAction();
                     } else {
                         Log.d(TAG, "location: " + currentLocation);
                     }
