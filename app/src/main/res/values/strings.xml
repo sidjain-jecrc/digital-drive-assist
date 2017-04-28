@@ -11,7 +11,9 @@
     <string name="restaurant_address_zip_found">Corresponding zipcode found</string>
     <string name="restaurant_address_zip_not_found">Corresponding zipcode not found</string>
 
-
+    <string name="facebook_application_id" translatable="false">116332732199476</string>
+    <!-- Facebook Application ID, prefixed by 'fb'.  Enables Chrome Custom tabs. -->
+    <string name="facebook_login_protocol_scheme" translatable="false">fb116332732199476</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

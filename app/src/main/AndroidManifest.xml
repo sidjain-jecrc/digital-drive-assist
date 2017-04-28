@@ -48,7 +48,9 @@
             android:exported="false" />
         <service
             android:name=".main.services.LocationTrackerService"
-            android:exported="false"></service>
+            android:exported="false" />
+
+        <activity android:name=".main.activities.UpdateActivity"></activity>
     </application>
 
 </manifest>
