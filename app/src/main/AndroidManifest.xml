@@ -62,6 +62,9 @@
             </intent-filter>
         </receiver>
 
+        <activity android:name=".main.activities.NavigationActivity"></activity>
+        <activity android:name=".main.activities.UpdateActivity"></activity>
+
     </application>
 
 </manifest>
