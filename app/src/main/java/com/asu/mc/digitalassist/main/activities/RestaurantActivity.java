@@ -22,7 +22,7 @@ import android.widget.Toast;
 import com.asu.mc.digitalassist.R;
 import com.asu.mc.digitalassist.main.models.Restaurant;
 import com.asu.mc.digitalassist.main.rsclient.RestaurantApiClient;
-import com.asu.mc.digitalassist.main.services.GeoCodingService;
+import com.asu.mc.digitalassist.main.services.FetchZipCodeService;
 import com.asu.mc.digitalassist.main.utility.Constants;
 import com.asu.mc.digitalassist.main.utility.RestaurantListAdapter;
 import com.google.android.gms.common.ConnectionResult;
@@ -41,10 +41,10 @@ public class RestaurantActivity extends ListActivity implements OnConnectionFail
 
     protected GoogleApiClient mGoogleApiClient;
     protected RestaurantApiClient mRestaurantApiClient;
-    protected static Location mLastLocation;
-    protected static LocationRequest mLocationRequest;
+    protected Location mLastLocation;
+    protected LocationRequest mLocationRequest;
 
-    private AddressResultReceiver mResultReceiver;
+    protected AddressResultReceiver mResultReceiver;
     protected boolean mAddressRequested;
     protected String mCurrentZipCode;
 
@@ -54,27 +54,21 @@ public class RestaurantActivity extends ListActivity implements OnConnectionFail
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        mResultReceiver = new AddressResultReceiver(new Handler());
         checkAppPermissions();
         buildGoogleApiClient();
 
-        // TODO: Find a way to persist zip address so that it can retrieved anywhere in app
-        String homeZipCode = getIntent().getStringExtra("EXTRA_HOME_ZIP");
-
         // starting address intent service
         if (mGoogleApiClient.isConnected() && mLastLocation != null) {
-            startAddressIntentService();
+            startFetchZipCodeIntentService();
             mAddressRequested = true;
-        }
-
-        if (mCurrentZipCode != null && !mCurrentZipCode.equals(getString(R.string.restaurant_address_zip_not_found))) {
-            new FetchRestaurantTask().execute(mCurrentZipCode);
-        } else {
-            new FetchRestaurantTask().execute(homeZipCode);
         }
     }
 
-    protected void startAddressIntentService() {
-        Intent intent = new Intent(this, GeoCodingService.class);
+    protected void startFetchZipCodeIntentService() {
+        Log.d(TAG, "startFetchZipCodeIntentService");
+
+        Intent intent = new Intent(this, FetchZipCodeService.class);
         intent.putExtra(Constants.RECEIVER, mResultReceiver);
         intent.putExtra(Constants.LOCATION_DATA_EXTRA, mLastLocation);
         startService(intent);
@@ -92,6 +86,11 @@ public class RestaurantActivity extends ListActivity implements OnConnectionFail
             if (resultCode == Constants.SUCCESS_RESULT) {
                 Log.d(TAG, getString(R.string.restaurant_address_zip_found));
                 mCurrentZipCode = resultData.getString(Constants.RESULT_DATA_KEY);
+                if (mCurrentZipCode != null) {
+                    new FetchRestaurantTask().execute(mCurrentZipCode);
+                } else {
+                    Log.d(TAG, "Fetched current zip code is null");
+                }
             } else {
                 Log.d(TAG, getString(R.string.restaurant_address_zip_not_found));
                 mCurrentZipCode = getString(R.string.restaurant_address_zip_not_found);
@@ -99,20 +98,14 @@ public class RestaurantActivity extends ListActivity implements OnConnectionFail
         }
     }
 
-    public static void getCurrentKnownLocation(GoogleApiClient mGoogleApiClient) {
-        Log.d(TAG, "Inside getCurrentKnownLocation method");
+    public void getCurrentKnownLocation(GoogleApiClient mGoogleApiClient) {
+        Log.d(TAG, "getCurrentKnownLocation");
 
-        String latLongString = null;
         try {
             mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-            if (mLastLocation != null) {
-                Log.d(TAG, "Setting lat, long coordinates");
-                latLongString = String.valueOf(mLastLocation.getLatitude()) + "," + String.valueOf(mLastLocation.getLongitude());
-            }
         } catch (SecurityException e) {
             Log.e(TAG, "Error: " + e);
         }
-        Log.i(TAG, "Current location being returned: " + latLongString);
     }
 
     protected void createLocationRequest() {
@@ -142,7 +135,7 @@ public class RestaurantActivity extends ListActivity implements OnConnectionFail
         Log.d(TAG, "Inside onLocationChanged");
         mLastLocation.set(location);
         if (mGoogleApiClient.isConnected() && mLastLocation != null) {
-            startAddressIntentService();
+            startFetchZipCodeIntentService();
         }
     }
 
@@ -242,7 +235,7 @@ public class RestaurantActivity extends ListActivity implements OnConnectionFail
             }
             if (mAddressRequested) {
                 Log.d(TAG, "starting address intent service");
-                startAddressIntentService();
+                startFetchZipCodeIntentService();
             }
         }
         createLocationRequest();

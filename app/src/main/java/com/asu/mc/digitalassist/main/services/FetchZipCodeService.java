@@ -2,32 +2,37 @@ package com.asu.mc.digitalassist.main.services;
 
 import android.app.IntentService;
 import android.content.Intent;
+import android.content.Context;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.ResultReceiver;
-import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.asu.mc.digitalassist.R;
+import com.asu.mc.digitalassist.main.activities.RestaurantActivity;
 import com.asu.mc.digitalassist.main.utility.Constants;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
-public class GeoCodingService extends IntentService {
+public class FetchZipCodeService extends IntentService {
 
-    protected static final String TAG = GeoCodingService.class.getSimpleName();
+    protected static final String TAG = FetchZipCodeService.class.getSimpleName();
 
-    protected static ResultReceiver mReceiver;
-    public GeoCodingService() {
+    public FetchZipCodeService() {
         super(TAG);
     }
 
+    protected static ResultReceiver mReceiver;
+
+    protected ResultReceiver mResultReceiver;
+    protected Location mCurrentLocation;
+
     @Override
-    protected void onHandleIntent(@Nullable Intent intent) {
+    protected void onHandleIntent(Intent intent) {
 
         String errorMessage = "";
         List<Address> addresses = null;
@@ -71,6 +76,7 @@ public class GeoCodingService extends IntentService {
                     ", Longitude = " + location.getLongitude(), illegalArgumentException);
             deliverResultToReceiver(Constants.FAILURE_RESULT, errorMessage);
         }
+
     }
 
     public static void deliverResultToReceiver(int resultCode, String message) {
@@ -79,5 +85,6 @@ public class GeoCodingService extends IntentService {
         bundle.putString(Constants.RESULT_DATA_KEY, message);
         mReceiver.send(resultCode, bundle);
     }
+
 
 }

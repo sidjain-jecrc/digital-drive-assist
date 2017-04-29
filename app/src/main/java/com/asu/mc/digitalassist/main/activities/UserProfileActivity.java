@@ -4,8 +4,8 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -25,6 +25,8 @@ import java.util.Calendar;
 
 public class UserProfileActivity extends AppCompatActivity {
 
+    protected static final String TAG = UserProfileActivity.class.getSimpleName();
+
     private static IdpResponse idpResponse = null;
     private String homeZipCode = null;
     private FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
@@ -41,6 +43,7 @@ public class UserProfileActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_profile);
+
         getApplicationContext().deleteDatabase(DB_NAME);
         dbHelper = new UserProfileDbHelper(this,DB_NAME);
         final EditText userProfileFirstName = (EditText) findViewById(R.id.user_profile_firstname);
@@ -97,26 +100,27 @@ public class UserProfileActivity extends AppCompatActivity {
     }
 
     public void scheduleRestaurantSuggestionAlarm() {
-
-        Intent intentAlarm = new Intent(this, RestaurantAlarmReceiver.class);
-        intentAlarm.putExtra("EXTRA_HOME_ZIP", homeZipCode);
-
-        Calendar lunchTime = Calendar.getInstance();
-        lunchTime.set(Calendar.HOUR_OF_DAY, 12);
-        lunchTime.set(Calendar.MINUTE, 0);
-        lunchTime.set(Calendar.SECOND, 0);
-
-        Calendar dinnerTime = Calendar.getInstance();
-        dinnerTime.set(Calendar.HOUR_OF_DAY, 19);
-        dinnerTime.set(Calendar.MINUTE, 0);
-        dinnerTime.set(Calendar.SECOND, 0);
+        Log.d(TAG, "scheduleRestaurantSuggestionAlarm");
 
         // Get the Alarm Service.
         AlarmManager restaurantAlarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        Intent intentAlarm = new Intent("com.asu.mc.digitalassist.START_ALARM");
+        intentAlarm.putExtra("EXTRA_HOME_ZIP", homeZipCode);
+        PendingIntent lunchIntent = PendingIntent.getBroadcast(this, 0, intentAlarm, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent dinnerIntent = PendingIntent.getBroadcast(this, 0, intentAlarm, PendingIntent.FLAG_UPDATE_CURRENT);
+
+
+        Calendar lunchTime = Calendar.getInstance();
+        lunchTime.setTimeInMillis(System.currentTimeMillis());
+        lunchTime.set(Calendar.HOUR_OF_DAY, 12);
+
+        Calendar dinnerTime = Calendar.getInstance();
+        dinnerTime.setTimeInMillis(System.currentTimeMillis());
+        dinnerTime.set(Calendar.HOUR_OF_DAY, 19);
 
         // Set the alarm for a lunch and dinner time.
-        restaurantAlarmManager.set(AlarmManager.RTC_WAKEUP, lunchTime.getTimeInMillis(), PendingIntent.getBroadcast(this, 1, intentAlarm, PendingIntent.FLAG_UPDATE_CURRENT));
-        restaurantAlarmManager.set(AlarmManager.RTC_WAKEUP, dinnerTime.getTimeInMillis(), PendingIntent.getBroadcast(this, 1, intentAlarm, PendingIntent.FLAG_UPDATE_CURRENT));
+        restaurantAlarmManager.setRepeating(AlarmManager.RTC_WAKEUP, lunchTime.getTimeInMillis(), AlarmManager.INTERVAL_DAY, lunchIntent);
+        restaurantAlarmManager.setRepeating(AlarmManager.RTC_WAKEUP, dinnerTime.getTimeInMillis(), AlarmManager.INTERVAL_DAY, dinnerIntent);
 
     }
 

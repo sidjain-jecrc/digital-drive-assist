@@ -72,7 +72,7 @@ public class NotificationService extends IntentService {
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this);
         mBuilder.setSmallIcon(R.drawable.eaticon);
         mBuilder.setContentTitle("Nearby Restaurants");
-        mBuilder.setContentText("You have some nearby restaurants");
+        mBuilder.setContentText("Time to satisfy your taste buds, checkout nearby restaurants");
  //       mBuilder.setDefaults(Notification.DEFAULT_LIGHTS | Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE);
         Intent resultIntent = new Intent(this, RestaurantActivity.class);
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
