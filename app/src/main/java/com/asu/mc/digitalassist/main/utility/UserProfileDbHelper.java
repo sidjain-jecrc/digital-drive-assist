@@ -50,7 +50,7 @@ public class UserProfileDbHelper extends SQLiteOpenHelper {
         this.onCreate(db);
     }
 
-    /* Add a sensor sample to DB*/
+    /* Add a user profile object to DB*/
     public void addUserToDB(User user, String TABLE_NAME) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -65,8 +65,8 @@ public class UserProfileDbHelper extends SQLiteOpenHelper {
 
     /*Get k most recent samples from DB*/
     public List<User> getUsersFromDB(String TABLE_NAME, String email) {
-        String query = "SELECT * FROM " + TABLE_NAME + " ORDER BY zip WHERE email = '" + email+ "'";
-        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "SELECT * FROM " + TABLE_NAME;
+        SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(query, null);
         List<User> userList = new ArrayList<>();
         while (cursor.moveToNext()) {
@@ -77,6 +77,28 @@ public class UserProfileDbHelper extends SQLiteOpenHelper {
             );
             userList.add(user);
         }
+        db.close();
         return userList;
+    }
+    public User getUserDB(String TABLE_NAME,String email){
+        String query = "SELECT * FROM " + TABLE_NAME + "WHERE email= '"+email+"'";
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(query,null);
+        User user = null;
+        if(cursor.moveToNext()){
+            user = new User(cursor.getString(0),
+                    cursor.getString(1),
+                    cursor.getString(2),
+                    cursor.getLong(3)
+            );
+        }
+        db.close();
+        return user;
+    }
+    public void deleteUserFromDB(String TABLE_NAME, String email){
+        String delQuery = "DELETE FROM "+ TABLE_NAME + " WHERE email= '"+email+"'";
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL(delQuery);
+        db.close();
     }
 }

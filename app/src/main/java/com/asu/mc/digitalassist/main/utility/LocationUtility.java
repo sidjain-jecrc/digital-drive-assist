@@ -16,23 +16,18 @@ public class LocationUtility {
 
     protected static Location mLastLocation;
 
-    // return lat,long coordinates of current location
-    public static String getCurrentKnownLocation(GoogleApiClient mGoogleApiClient) {
+    // return current location
+    public static Location getCurrentKnownLocation(GoogleApiClient mGoogleApiClient) {
         Log.d(TAG, "Inside getCurrentKnownLocation method");
         String latLongString = null;
         try {
             mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-            if (mLastLocation != null) {
-                Log.d(TAG, "Setting lat, long coordinates");
-                latLongString = String.valueOf(mLastLocation.getLatitude()) + "," + String.valueOf(mLastLocation.getLongitude());
-            }
-
         } catch (SecurityException e) {
             Log.e(TAG, "Error: " + e);
         }
 
-        Log.i(TAG, "Current location being returned: " + latLongString);
-        return latLongString;
+        Log.i(TAG, "Current location being returned: " + mLastLocation);
+        return mLastLocation;
     }
 
     protected void createLocationRequest(GoogleApiClient mGoogleApiClient) {

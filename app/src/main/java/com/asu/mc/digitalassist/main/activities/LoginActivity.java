@@ -1,6 +1,7 @@
 package com.asu.mc.digitalassist.main.activities;
 
 import android.content.Intent;
+import android.os.Debug;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -10,6 +11,7 @@ import android.view.View;
 
 import com.asu.mc.digitalassist.R;
 import com.firebase.ui.auth.AuthUI;
+import com.firebase.ui.auth.BuildConfig;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
 import com.firebase.ui.auth.ResultCodes;
@@ -37,10 +39,8 @@ public class LoginActivity extends AppCompatActivity {
                     .signOut(this)
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         public void onComplete(@NonNull Task<Void> task) {
-                            // user is now signed out
-                            startActivity(new Intent(getApplicationContext(),LoginActivity.class));
-                            finish();
-                            return;
+//                            startActivity(new Intent(LoginActivity.this, LoginActivity.class));
+//                            finish();
                         }
                     });
 //            String email = auth.getCurrentUser().getEmail();
@@ -52,7 +52,7 @@ public class LoginActivity extends AppCompatActivity {
 
         }
         //     else{
-        AuthUI.SignInIntentBuilder signInIntentBuilder = AuthUI.getInstance().createSignInIntentBuilder().setIsSmartLockEnabled(false);
+        AuthUI.SignInIntentBuilder signInIntentBuilder = AuthUI.getInstance().createSignInIntentBuilder().setIsSmartLockEnabled(!BuildConfig.DEBUG);
         ArrayList<AuthUI.IdpConfig> authProviders = new ArrayList<>();
         authProviders.add(new AuthUI.IdpConfig.Builder(AuthUI.EMAIL_PROVIDER).build());
         authProviders.add(new AuthUI.IdpConfig.Builder(AuthUI.GOOGLE_PROVIDER).build());
@@ -70,6 +70,8 @@ public class LoginActivity extends AppCompatActivity {
             Log.e("provider type: ",response.getProviderType());
             String provider = response.getProviderType();
             if (responseCode == ResultCodes.OK) {
+                String name = auth.getCurrentUser().getDisplayName();
+                Log.e("Name: ",name);
                 startActivity(UpdateActivity.createIntent(this, response));
                 finish();
                 return;

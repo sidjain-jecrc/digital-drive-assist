@@ -50,6 +50,7 @@
             android:name=".main.services.LocationTrackerService"
             android:exported="false" />
 
+        <activity android:name=".main.activities.NavigationActivity"></activity>
         <activity android:name=".main.activities.UpdateActivity"></activity>
     </application>
 
