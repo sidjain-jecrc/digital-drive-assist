@@ -172,33 +172,6 @@ public class RestaurantRecommendationService extends IntentService implements Lo
         }
     }
 
-    private class AddressResultReceiver extends ResultReceiver {
-
-        public AddressResultReceiver(Handler handler) {
-            super(handler);
-        }
-
-        @Override
-        protected void onReceiveResult(int resultCode, Bundle resultData) {
-            Log.d(TAG, "onReceiveResult");
-
-            if (resultCode == Constants.SUCCESS_RESULT) {
-                Log.d(TAG, getString(R.string.restaurant_address_zip_found));
-                mCurrentZipCode = resultData.getString(Constants.RESULT_DATA_KEY);
-
-                // compare home zip with current zip and start notification service
-                if (mHomeZip != null && mCurrentZipCode != null) {
-                    NotificationService.createIntentRecommendationNotificationService(getApplicationContext());
-                } else {
-                    Log.d(TAG, "homeZip: " + mHomeZip + ", currentZip: " + mCurrentZipCode);
-                }
-            } else {
-                Log.d(TAG, getString(R.string.restaurant_address_zip_not_found));
-                mCurrentZipCode = getString(R.string.restaurant_address_zip_not_found);
-            }
-        }
-    }
-
     @Override
     public void onLocationChanged(Location location) {
         Log.d(TAG, "onLocationChanged");

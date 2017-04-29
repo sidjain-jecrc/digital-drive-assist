@@ -28,9 +28,6 @@ public class FetchZipCodeService extends IntentService {
 
     protected static ResultReceiver mReceiver;
 
-    protected ResultReceiver mResultReceiver;
-    protected Location mCurrentLocation;
-
     @Override
     protected void onHandleIntent(Intent intent) {
 
