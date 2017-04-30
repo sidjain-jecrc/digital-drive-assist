@@ -1,7 +1,6 @@
 package com.asu.mc.digitalassist.main.activities;
 
 import android.content.Intent;
-import android.os.Debug;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -15,8 +14,6 @@ import com.firebase.ui.auth.BuildConfig;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
 import com.firebase.ui.auth.ResultCodes;
-import com.firebase.ui.auth.ui.FlowParameters;
-import com.firebase.ui.auth.ui.email.RecoverPasswordActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -72,7 +69,7 @@ public class LoginActivity extends AppCompatActivity {
             if (responseCode == ResultCodes.OK) {
                 String name = auth.getCurrentUser().getDisplayName();
                 Log.e("Name: ",name);
-                startActivity(UpdateActivity.createIntent(this, response));
+                startActivity(ChangePasswordActivity.createIntent(this, response));
                 finish();
                 return;
             } else {

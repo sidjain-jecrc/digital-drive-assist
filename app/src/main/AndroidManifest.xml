@@ -61,9 +61,7 @@
                 <action android:name="com.asu.mc.digitalassist.START_ALARM"></action>
             </intent-filter>
         </receiver>
-
-        <activity android:name=".main.activities.NavigationActivity"></activity>
-        <activity android:name=".main.activities.UpdateActivity"></activity>
+        <activity android:name=".main.activities.ChangePasswordActivity"></activity>
 
     </application>
 

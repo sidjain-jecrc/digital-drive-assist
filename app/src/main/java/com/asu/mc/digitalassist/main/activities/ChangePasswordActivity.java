@@ -6,28 +6,21 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.TextureView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import com.asu.mc.digitalassist.R;
-import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
-import com.firebase.ui.auth.ui.FlowParameters;
-import com.firebase.ui.auth.ui.email.RecoverPasswordActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import java.util.Iterator;
-
-public class UpdateActivity extends AppCompatActivity {
+public class ChangePasswordActivity extends AppCompatActivity {
     EditText editText_oldPwd = null;
     EditText editText_newPwd = null;
     EditText editText_confirmPwd = null;
@@ -36,7 +29,7 @@ public class UpdateActivity extends AppCompatActivity {
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
     private Button update_Button = null;
     public static Intent createIntent(Context context, IdpResponse response) {
-        Intent intent = new Intent(context, UpdateActivity.class);
+        Intent intent = new Intent(context, ChangePasswordActivity.class);
         idpResponse = response;
         return intent;
     }
