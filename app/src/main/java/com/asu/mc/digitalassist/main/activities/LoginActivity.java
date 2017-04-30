@@ -67,12 +67,12 @@ public class LoginActivity extends AppCompatActivity {
         View parentView = findViewById(android.R.id.content);
         if (requestCode == RC_SIGN_IN) {
             IdpResponse response = IdpResponse.fromResultIntent(data);
-            Log.e("provider type: ",response.getProviderType());
-            String provider = response.getProviderType();
+
+            Log.d("provider type: ",response.getProviderType());
             if (responseCode == ResultCodes.OK) {
                 String name = auth.getCurrentUser().getDisplayName();
-                Log.e("Name: ",name);
-                startActivity(UpdateActivity.createIntent(this, response));
+                Log.d("Name: ",name);
+                startActivity(UserProfileActivity.createIntent(this, response));
                 finish();
                 return;
             } else {

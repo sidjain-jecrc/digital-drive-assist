@@ -6,28 +6,25 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.TextureView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.asu.mc.digitalassist.R;
-import com.firebase.ui.auth.AuthUI;
+import com.asu.mc.digitalassist.main.models.User;
+import com.asu.mc.digitalassist.main.utility.UserProfileDbHelper;
 import com.firebase.ui.auth.IdpResponse;
-import com.firebase.ui.auth.ui.FlowParameters;
-import com.firebase.ui.auth.ui.email.RecoverPasswordActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import java.util.Iterator;
+public class ChangePasswordActivity extends AppCompatActivity {
 
-public class UpdateActivity extends AppCompatActivity {
     EditText editText_oldPwd = null;
     EditText editText_newPwd = null;
     EditText editText_confirmPwd = null;
@@ -35,42 +32,63 @@ public class UpdateActivity extends AppCompatActivity {
     private static IdpResponse idpResponse = null;
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
     private Button update_Button = null;
+    private UserProfileDbHelper dbHelper = null;
+    private static final String DB_NAME = "UserDB";
+    private static final String TABLE_NAME = "UserProfile";
+
     public static Intent createIntent(Context context, IdpResponse response) {
-        Intent intent = new Intent(context, UpdateActivity.class);
+        Intent intent = new Intent(context, ChangePasswordActivity.class);
         idpResponse = response;
         return intent;
     }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_update);
+        setContentView(R.layout.activity_change_password);
+
+        dbHelper = new UserProfileDbHelper(this, DB_NAME);
+
         textView_msg = (TextView) findViewById(R.id.textView_msg);
+
         update_Button = (Button) findViewById(R.id.button_pwdUpdate);
-        update_Button.setOnClickListener(new View.OnClickListener(){
+        update_Button.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v){
-                editText_oldPwd= (EditText)findViewById(R.id.editText_oldPwd);
-                editText_newPwd = (EditText)findViewById(R.id.editText_newPwd);
-                editText_confirmPwd = (EditText)findViewById(R.id.editText_confirmPwd);
+            public void onClick(View v) {
+
+                editText_oldPwd = (EditText) findViewById(R.id.editText_oldPwd);
+                editText_newPwd = (EditText) findViewById(R.id.editText_newPwd);
+                editText_confirmPwd = (EditText) findViewById(R.id.editText_confirmPwd);
                 String oldPassword = editText_oldPwd.getText().toString();
                 final String newPassword = editText_newPwd.getText().toString();
                 String confirmPassword = editText_confirmPwd.getText().toString();
-                if(newPassword.equals(confirmPassword)) {
+
+                if (oldPassword.equals("") || newPassword.equals("") || confirmPassword.equals("")) {
+                    Toast.makeText(getApplicationContext(), "All fields are mandatory", Toast.LENGTH_SHORT).show();
+
+                } else if (newPassword.equals(confirmPassword)) {
                     FirebaseUser user = firebaseAuth.getCurrentUser();
-                    if (idpResponse.getProviderType().equals("password")) {
+                    User existingUser = dbHelper.getUserDB(TABLE_NAME, user.getEmail());
+                    String provider = existingUser.getProvider();
+
+                    if (provider.equals("password")) {
                         AuthCredential credential = EmailAuthProvider.getCredential(user.getEmail(), oldPassword);
                         user.reauthenticate(credential).addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
+
                                 if (task.isSuccessful()) {
                                     Log.e("Reuthenticate: ", "User re-authenticated.");
                                     FirebaseUser user = firebaseAuth.getCurrentUser();
                                     user.updatePassword(newPassword).addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
+
                                             if (task.isSuccessful()) {
                                                 Log.e("PASSWORD Update:", "User password updated.");
                                                 textView_msg.setText("Password updated successfully");
+                                                Toast.makeText(getApplicationContext(), "Password updated successfully", Toast.LENGTH_SHORT).show();
+                                                startActivity(new Intent(ChangePasswordActivity.this, NavigationActivity.class));
                                             } else {
                                                 Log.e("PASSWORD Update:", "User password not updated.");
                                                 textView_msg.setText("Password not updated");
@@ -84,8 +102,7 @@ public class UpdateActivity extends AppCompatActivity {
                             }
                         });
                     }
-                }
-                else{
+                } else {
                     textView_msg.setText("New passwords did not match");
                 }
             }

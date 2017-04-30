@@ -8,6 +8,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+
 import com.asu.mc.digitalassist.main.models.User;
 
 import java.util.ArrayList;
@@ -39,7 +40,8 @@ public class UserProfileDbHelper extends SQLiteOpenHelper {
                 + " first_name TEXT, "
                 + " last_name TEXT, "
                 + " email TEXT, "
-                + " zip REAL"
+                + " zip REAL,"
+                + " provider TEXT"
                 + " );";
         this.getWritableDatabase().execSQL(CREATE_TABLE_SQL);
     }
@@ -52,18 +54,31 @@ public class UserProfileDbHelper extends SQLiteOpenHelper {
 
     /* Add a user profile object to DB*/
     public void addUserToDB(User user, String TABLE_NAME) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put("first_name", user.getFirstName());
-        values.put("last_name", user.getLastName());
-        values.put("email", user.getEmail());
-        values.put("zip", user.getZip());
 
-        db.insert(TABLE_NAME, null, values);
+        User newUser = this.getUserDB(TABLE_NAME, user.getEmail());
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        if (newUser == null) {
+            ContentValues values = new ContentValues();
+            values.put("first_name", user.getFirstName());
+            values.put("last_name", user.getLastName());
+            values.put("email", user.getEmail());
+            values.put("zip", user.getZip());
+            values.put("provider", user.getProvider());
+
+            db.insert(TABLE_NAME, null, values);
+        } else {
+            ContentValues values = new ContentValues();
+            values.put("first_name", user.getFirstName());
+            values.put("last_name", user.getLastName());
+            values.put("zip", user.getZip());
+            values.put("provider", user.getProvider());
+
+            db.update(TABLE_NAME, values, "email= '" + user.getEmail() + "'", null);
+        }
         db.close();
     }
 
-    /*Get k most recent samples from DB*/
     public List<User> getUsersFromDB(String TABLE_NAME, String email) {
         String query = "SELECT * FROM " + TABLE_NAME;
         SQLiteDatabase db = this.getReadableDatabase();
@@ -73,30 +88,34 @@ public class UserProfileDbHelper extends SQLiteOpenHelper {
             User user = new User(cursor.getString(0),
                     cursor.getString(1),
                     cursor.getString(2),
-                    cursor.getLong(3)
+                    cursor.getLong(3),
+                    cursor.getString(4)
             );
             userList.add(user);
         }
         db.close();
         return userList;
     }
-    public User getUserDB(String TABLE_NAME,String email){
-        String query = "SELECT * FROM " + TABLE_NAME + "WHERE email= '"+email+"'";
+
+    public User getUserDB(String TABLE_NAME, String email) {
+        String query = "SELECT * FROM " + TABLE_NAME + "WHERE email= '" + email + "'";
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery(query,null);
+        Cursor cursor = db.rawQuery(query, null);
         User user = null;
-        if(cursor.moveToNext()){
+        if (cursor.moveToNext()) {
             user = new User(cursor.getString(0),
                     cursor.getString(1),
                     cursor.getString(2),
-                    cursor.getLong(3)
+                    cursor.getLong(3),
+                    cursor.getString(4)
             );
         }
         db.close();
         return user;
     }
-    public void deleteUserFromDB(String TABLE_NAME, String email){
-        String delQuery = "DELETE FROM "+ TABLE_NAME + " WHERE email= '"+email+"'";
+
+    public void deleteUserFromDB(String TABLE_NAME, String email) {
+        String delQuery = "DELETE FROM " + TABLE_NAME + " WHERE email= '" + email + "'";
         SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL(delQuery);
         db.close();

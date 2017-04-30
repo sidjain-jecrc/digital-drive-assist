@@ -7,6 +7,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.asu.mc.digitalassist.main.services.RestaurantRecommendationService;
+import com.asu.mc.digitalassist.main.utility.UserProfileDbHelper;
 
 
 /**
@@ -19,9 +20,7 @@ public class RestaurantAlarmReceiver extends WakefulBroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.d(TAG, "<----Alarm received---->");
-
-        Toast.makeText(context, "Alarm!!", Toast.LENGTH_SHORT).show();
+        Log.d(TAG, "Alarm received");
 
         String homeZipCode = intent.getStringExtra("EXTRA_HOME_ZIP");
         RestaurantRecommendationService.startLocationTrackerAction(context, homeZipCode);

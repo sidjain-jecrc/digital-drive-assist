@@ -40,6 +40,8 @@
         <activity android:name=".main.activities.RestaurantWebViewActivity" />
         <activity android:name=".main.activities.OverSpeedActivity" />
         <activity android:name=".main.activities.NavigationActivity" />
+        <activity android:name=".main.activities.ChangePasswordActivity" />
+
 
         <service
             android:name=".main.services.NotificationService"
@@ -61,10 +63,6 @@
                 <action android:name="com.asu.mc.digitalassist.START_ALARM"></action>
             </intent-filter>
         </receiver>
-
-        <activity android:name=".main.activities.NavigationActivity"></activity>
-        <activity android:name=".main.activities.UpdateActivity"></activity>
-
     </application>
 
 </manifest>

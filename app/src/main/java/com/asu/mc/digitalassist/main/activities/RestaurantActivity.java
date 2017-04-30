@@ -14,6 +14,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -25,6 +28,7 @@ import com.asu.mc.digitalassist.main.rsclient.RestaurantApiClient;
 import com.asu.mc.digitalassist.main.services.FetchZipCodeService;
 import com.asu.mc.digitalassist.main.utility.Constants;
 import com.asu.mc.digitalassist.main.utility.RestaurantListAdapter;
+import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
@@ -32,6 +36,8 @@ import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListe
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 
 import java.util.List;
 
@@ -261,5 +267,38 @@ public class RestaurantActivity extends ListActivity implements OnConnectionFail
     public void onConnectionSuspended(int i) {
         Log.i(TAG, "Inside On onConnectionSuspended");
         mGoogleApiClient.connect();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.settings, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.menu_change_password:
+                startActivity(new Intent(this, ChangePasswordActivity.class));
+                return true;
+            case R.id.menu_sign_out:
+                userSignOut();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    protected void userSignOut() {
+        AuthUI.getInstance()
+                .signOut(this)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    public void onComplete(@NonNull Task<Void> task) {
+                        startActivity(new Intent(RestaurantActivity.this, LoginActivity.class));
+                        finish();
+                    }
+                });
     }
 }

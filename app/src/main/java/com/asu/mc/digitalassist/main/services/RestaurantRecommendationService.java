@@ -15,6 +15,7 @@ import android.util.Log;
 
 import com.asu.mc.digitalassist.R;
 import com.asu.mc.digitalassist.main.utility.Constants;
+import com.asu.mc.digitalassist.main.utility.UserProfileDbHelper;
 
 import java.io.IOException;
 import java.util.List;
@@ -54,10 +55,7 @@ public class RestaurantRecommendationService extends IntentService implements Lo
         Log.d(TAG, "startLocationTrackerAction");
 
         Intent intent = new Intent(context, RestaurantRecommendationService.class);
-
-        //TODO: fetch home zip from SQLite database instead of intent
         intent.putExtra("EXTRA_HOME_ZIP", homeZipCode);
-
         context.startService(intent);
     }
 
@@ -120,7 +118,7 @@ public class RestaurantRecommendationService extends IntentService implements Lo
     }
 
     private void handleLocationTrackerAction() {
-        Log.d(TAG, "<-------------handleLocationTrackerAction---------------->");
+        Log.d(TAG, "handleLocationTrackerAction");
 
         if (mLocationManager == null) {
             mLocationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
