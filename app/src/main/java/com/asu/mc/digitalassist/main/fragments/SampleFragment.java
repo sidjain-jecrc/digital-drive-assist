@@ -1,4 +1,4 @@
-package com.asu.mc.digitalassist.activities.fragments;
+package com.asu.mc.digitalassist.main.fragments;
 
 import android.content.Context;
 import android.net.Uri;
