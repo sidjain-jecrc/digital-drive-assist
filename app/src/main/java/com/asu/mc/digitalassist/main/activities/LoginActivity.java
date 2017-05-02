@@ -1,6 +1,7 @@
 package com.asu.mc.digitalassist.main.activities;
 
 import android.content.Intent;
+import android.os.Debug;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -14,6 +15,8 @@ import com.firebase.ui.auth.BuildConfig;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
 import com.firebase.ui.auth.ResultCodes;
+import com.firebase.ui.auth.ui.FlowParameters;
+import com.firebase.ui.auth.ui.email.RecoverPasswordActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -31,29 +34,23 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        if (auth.getCurrentUser() != null) {
-            AuthUI.getInstance()
-                    .signOut(this)
-                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                        public void onComplete(@NonNull Task<Void> task) {
-//                            startActivity(new Intent(LoginActivity.this, LoginActivity.class));
-//                            finish();
-                        }
-                    });
-//            String email = auth.getCurrentUser().getEmail();
-//            String name = auth.getCurrentUser().getDisplayName();
-//            Log.e("User",email);
-//            Log.e("User",name);
-//            startActivity(new Intent(this,RestaurantActivity.class));
-//              finish();
-
-        }
+//        if (auth.getCurrentUser() != null) {
+//            AuthUI.getInstance()
+//                    .signOut(this)
+//                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+//                        public void onComplete(@NonNull Task<Void> task) {
+////                            startActivity(new Intent(LoginActivity.this, LoginActivity.class));
+////                            finish();
+//                        }
+//                    });
+//
+//        }
         //     else{
-        AuthUI.SignInIntentBuilder signInIntentBuilder = AuthUI.getInstance().createSignInIntentBuilder().setIsSmartLockEnabled(!BuildConfig.DEBUG);
+        AuthUI.SignInIntentBuilder signInIntentBuilder = AuthUI.getInstance().createSignInIntentBuilder().setIsSmartLockEnabled(true);
         ArrayList<AuthUI.IdpConfig> authProviders = new ArrayList<>();
         authProviders.add(new AuthUI.IdpConfig.Builder(AuthUI.EMAIL_PROVIDER).build());
         authProviders.add(new AuthUI.IdpConfig.Builder(AuthUI.GOOGLE_PROVIDER).build());
-        authProviders.add(new AuthUI.IdpConfig.Builder(AuthUI.FACEBOOK_PROVIDER).build());
+        //authProviders.add(new AuthUI.IdpConfig.Builder(AuthUI.FACEBOOK_PROVIDER).build());
         startActivityForResult(signInIntentBuilder.setProviders(authProviders).build(), 123);
         //   }
     }
@@ -64,12 +61,12 @@ public class LoginActivity extends AppCompatActivity {
         View parentView = findViewById(android.R.id.content);
         if (requestCode == RC_SIGN_IN) {
             IdpResponse response = IdpResponse.fromResultIntent(data);
-            Log.e("provider type: ",response.getProviderType());
-            String provider = response.getProviderType();
+
+            Log.d("provider type: ",response.getProviderType());
             if (responseCode == ResultCodes.OK) {
                 String name = auth.getCurrentUser().getDisplayName();
-                Log.e("Name: ",name);
-                startActivity(ChangePasswordActivity.createIntent(this, response));
+                Log.d("Name: ",name);
+                startActivity(UserProfileActivity.createIntent(this, response));
                 finish();
                 return;
             } else {

@@ -10,12 +10,22 @@ public class User {
     private String lastName;
     private String email;
     private Long zip;
+    private String provider;
 
-    public User(String firstName, String lastName, String email, Long zip) {
+    public User(String firstName, String lastName, String email, Long zip, String provider) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.zip = zip;
+        this.provider = provider;
+    }
+
+    public String getProvider() {
+        return provider;
+    }
+
+    public void setProvider(String provider) {
+        this.provider = provider;
     }
 
     public String getFirstName() {
@@ -42,10 +52,11 @@ public class User {
         this.email = email;
     }
 
-    public Long getZip(){
+    public Long getZip() {
         return zip;
     }
-    public void setZip(Long zip){
+
+    public void setZip(Long zip) {
         this.zip = zip;
     }
 }
