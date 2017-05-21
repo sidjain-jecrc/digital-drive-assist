@@ -102,6 +102,9 @@ public class ChangePasswordActivity extends AppCompatActivity {
                             }
                         });
                     }
+                    else{
+                        textView_msg.setText("Not allowed for this authentication type");
+                    }
                 } else {
                     textView_msg.setText("New passwords did not match");
                 }

@@ -98,7 +98,7 @@ public class UserProfileDbHelper extends SQLiteOpenHelper {
     }
 
     public User getUserDB(String TABLE_NAME, String email) {
-        String query = "SELECT * FROM " + TABLE_NAME + "WHERE email= '" + email + "'";
+        String query = "SELECT * FROM " + TABLE_NAME + " WHERE email='" + email + "'";
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(query, null);
         User user = null;

@@ -46,9 +46,9 @@ public class UserProfileActivity extends AppCompatActivity {
         setContentView(R.layout.activity_user_profile);
 
         // TODO: remove after testing is done
-        getApplicationContext().deleteDatabase(DB_NAME);
+        //getApplicationContext().deleteDatabase(DB_NAME);
         dbHelper = new UserProfileDbHelper(this, DB_NAME);
-
+        dbHelper.createTable(TABLE_NAME);
         final String email = firebaseAuth.getCurrentUser().getEmail();
 
         final EditText userProfileFirstName = (EditText) findViewById(R.id.user_profile_firstname);
@@ -92,13 +92,13 @@ public class UserProfileActivity extends AppCompatActivity {
                     dbHelper.createTable(TABLE_NAME);
                     dbHelper.addUserToDB(user, TABLE_NAME);
                     //Uncomment following to test database
-                    /* ArrayList<User> userList = (ArrayList<User>) dbHelper.getUsersFromDB(TABLE_NAME,"");
+                     ArrayList<User> userList = (ArrayList<User>) dbHelper.getUsersFromDB(TABLE_NAME,"");
                     for(User u:userList){
                         Log.e("fname: ",u.getFirstName());
                         Log.e("lname: ",u.getLastName());
                         Log.e("email: ",u.getEmail());
                         Log.e("zip: ",String.valueOf(u.getZip()));
-                    }*/
+                    }
                     Intent intent = new Intent(v.getContext(), NavigationActivity.class);
                     scheduleRestaurantSuggestionAlarm();
                     startActivity(intent);

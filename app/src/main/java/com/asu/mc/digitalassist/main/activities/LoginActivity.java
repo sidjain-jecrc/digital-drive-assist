@@ -34,29 +34,23 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        if (auth.getCurrentUser() != null) {
-            AuthUI.getInstance()
-                    .signOut(this)
-                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                        public void onComplete(@NonNull Task<Void> task) {
-//                            startActivity(new Intent(LoginActivity.this, LoginActivity.class));
-//                            finish();
-                        }
-                    });
-//            String email = auth.getCurrentUser().getEmail();
-//            String name = auth.getCurrentUser().getDisplayName();
-//            Log.e("User",email);
-//            Log.e("User",name);
-//            startActivity(new Intent(this,RestaurantActivity.class));
-//              finish();
-
-        }
+//        if (auth.getCurrentUser() != null) {
+//            AuthUI.getInstance()
+//                    .signOut(this)
+//                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+//                        public void onComplete(@NonNull Task<Void> task) {
+////                            startActivity(new Intent(LoginActivity.this, LoginActivity.class));
+////                            finish();
+//                        }
+//                    });
+//
+//        }
         //     else{
-        AuthUI.SignInIntentBuilder signInIntentBuilder = AuthUI.getInstance().createSignInIntentBuilder().setIsSmartLockEnabled(!BuildConfig.DEBUG);
+        AuthUI.SignInIntentBuilder signInIntentBuilder = AuthUI.getInstance().createSignInIntentBuilder().setIsSmartLockEnabled(true);
         ArrayList<AuthUI.IdpConfig> authProviders = new ArrayList<>();
         authProviders.add(new AuthUI.IdpConfig.Builder(AuthUI.EMAIL_PROVIDER).build());
         authProviders.add(new AuthUI.IdpConfig.Builder(AuthUI.GOOGLE_PROVIDER).build());
-        authProviders.add(new AuthUI.IdpConfig.Builder(AuthUI.FACEBOOK_PROVIDER).build());
+        //authProviders.add(new AuthUI.IdpConfig.Builder(AuthUI.FACEBOOK_PROVIDER).build());
         startActivityForResult(signInIntentBuilder.setProviders(authProviders).build(), 123);
         //   }
     }
